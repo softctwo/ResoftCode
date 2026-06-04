@@ -55,6 +55,9 @@ export namespace ResoftStarter {
     apiKeyEnv?: string
     model?: string
     modelName?: string
+    // kilocode_change - CLI overrides for the active preset's window.
+    context?: number
+    output?: number
   }
 
   export type ResolveOptions = {
@@ -115,6 +118,10 @@ export namespace ResoftStarter {
         output: 16000,
       },
     },
+    // kilocode_change - DeepSeek V4 reports a 1M-token context window; the
+    // previous 128000 default made the kilo CLI compaction trigger kick in
+    // far too early during real regulatory-reporting runs. Override with
+    // `resoft init --context <N>` if your endpoint is capped lower.
     deepseek: {
       id: "deepseek",
       name: "DeepSeek",
@@ -126,8 +133,8 @@ export namespace ResoftStarter {
         name: "DeepSeek V4 Pro",
         toolCall: true,
         reasoning: true,
-        context: 128000,
-        output: 16000,
+        context: 1000000,
+        output: 32000,
       },
     },
     openai: {
@@ -175,6 +182,10 @@ export namespace ResoftStarter {
         output: 16000,
       },
     },
+    // kilocode_change - Qwen3-Coder-Plus on DashScope exposes a 256K
+    // context window; the previous 128000 was conservative and forced
+    // premature compaction. Override with `--context <N>` if your
+    // plan caps lower.
     qwen: {
       id: "qwen",
       name: "Alibaba Qwen (DashScope)",
@@ -186,8 +197,8 @@ export namespace ResoftStarter {
         name: "Qwen3 Coder Plus",
         toolCall: true,
         reasoning: true,
-        context: 128000,
-        output: 16000,
+        context: 256000,
+        output: 32000,
       },
     },
     ollama: {
@@ -202,7 +213,7 @@ export namespace ResoftStarter {
         toolCall: true,
         reasoning: false,
         context: 32000,
-        output: 8000,
+        output: 8192,
       },
     },
   }
@@ -350,6 +361,11 @@ export namespace ResoftStarter {
         ...preset.model,
         id: input.model ?? preset.model.id,
         name: input.modelName ?? preset.model.name,
+        // kilocode_change - let CLI --context / --output overrides flow
+        // through without forcing the user to edit preset source when
+        // upstream models change their window.
+        context: input.context ?? preset.model.context,
+        output: input.output ?? preset.model.output,
       },
     }
   }

@@ -408,3 +408,36 @@ describe("kilo resoft init --with-mcp", () => {
     expect(after.mcp).toBeDefined()
   })
 })
+
+describe("kilo resoft init --context / --output", () => {
+  test("init --context overrides the preset's model context window", async () => {
+    await using tmp = await tmpdir()
+    await run(["resoft", "init", "--provider", "deepseek", "--context", "64000", "--dir", tmp.path])
+    const cfg = JSON.parse(await Bun.file(path.join(tmp.path, "kilo.jsonc")).text()) as {
+      provider: { deepseek: { models: { "deepseek-v4-pro": { limit: { context: number; output: number } } } } }
+    }
+    expect(cfg.provider.deepseek.models["deepseek-v4-pro"].limit.context).toBe(64000)
+    // Without --output, the preset default (32000) should be preserved.
+    expect(cfg.provider.deepseek.models["deepseek-v4-pro"].limit.output).toBe(32000)
+  })
+
+  test("init --output overrides the preset's max output tokens", async () => {
+    await using tmp = await tmpdir()
+    await run(["resoft", "init", "--provider", "openai", "--output", "4096", "--dir", tmp.path])
+    const cfg = JSON.parse(await Bun.file(path.join(tmp.path, "kilo.jsonc")).text()) as {
+      provider: { openai: { models: { "gpt-4o": { limit: { context: number; output: number } } } } }
+    }
+    expect(cfg.provider.openai.models["gpt-4o"].limit.output).toBe(4096)
+    expect(cfg.provider.openai.models["gpt-4o"].limit.context).toBe(128000)
+  })
+
+  test("init without --context leaves the preset default in place", async () => {
+    await using tmp = await tmpdir()
+    await run(["resoft", "init", "--provider", "deepseek", "--dir", tmp.path])
+    const cfg = JSON.parse(await Bun.file(path.join(tmp.path, "kilo.jsonc")).text()) as {
+      provider: { deepseek: { models: { "deepseek-v4-pro": { limit: { context: number } } } } }
+    }
+    // 1M is the new preset default — verifies the change was wired through.
+    expect(cfg.provider.deepseek.models["deepseek-v4-pro"].limit.context).toBe(1000000)
+  })
+})

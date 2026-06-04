@@ -131,6 +131,18 @@ export const ResoftCommand = cmd({
                 type: "string",
                 describe: "override model display name",
               })
+              // kilocode_change - override the starter preset's context/output
+              // window without editing source. Useful when the upstream
+              // model grows its window (e.g. DeepSeek V3 -> V4) or when a
+              // provider plan caps the window below the default.
+              .option("context", {
+                type: "number",
+                describe: "override the active preset's model context window (in tokens)",
+              })
+              .option("output", {
+                type: "number",
+                describe: "override the active preset's model max output (in tokens)",
+              })
               // kilocode_change - opt-in: also write a .kilo/mcp.json that wires the
               // resoft mock SQL MCP server so the V1 starter's data-aware
               // agents (quality-analyst, etl-developer, data-tester,
@@ -149,6 +161,8 @@ export const ResoftCommand = cmd({
               apiKeyEnv: args["api-key-env"],
               model: args.model,
               modelName: args["model-name"],
+              context: args.context,
+              output: args.output,
             }
             let provider: ResoftStarter.Provider
             try {
@@ -171,6 +185,12 @@ export const ResoftCommand = cmd({
             UI.println(`  provider: ${provider.id}/${provider.model.id} (${provider.name})`)
             UI.println(`  baseURL:  ${provider.baseURL}`)
             UI.println(`  apiKey:   {env:${provider.apiKeyEnv}}`)
+            // kilocode_change - surface the resolved context/output so users
+            // notice if the preset default is wrong for their plan
+            UI.println(`  context:  ${provider.model.context} tokens (output: ${provider.model.output})`)
+            UI.println(
+              `  override: --context <N> / --output <N> at init time if the preset value does not match your plan`,
+            )
             for (const file of result.written) UI.println(`  write ${file}`)
             for (const file of result.skipped) UI.println(`  skip  ${file}`)
             if (result.skipped.length > 0 && !args.force)

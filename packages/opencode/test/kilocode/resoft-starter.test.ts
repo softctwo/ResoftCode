@@ -560,3 +560,33 @@ describe("ResoftStarter.mcpConfigTemplate", () => {
     expect(parsed["resoft-mock-sql"]).toBeDefined()
   })
 })
+
+describe("Resoft starter model context windows", () => {
+  test("deepseek preset reports a 1M-token context window", () => {
+    const provider = ResoftStarter.resolveProvider({ provider: "deepseek" })
+    // 1M was the actual DeepSeek V4 window; the previous 128000 default
+    // triggered premature compaction during real regulatory-reporting runs.
+    expect(provider.model.context).toBe(1000000)
+  })
+
+  test("qwen preset reports a 256K-token context window", () => {
+    const provider = ResoftStarter.resolveProvider({ provider: "qwen" })
+    // Qwen3-Coder-Plus on DashScope exposes 256K, not the previous 128000.
+    expect(provider.model.context).toBe(256000)
+  })
+
+  test("resolveProvider honors a context override passed via input", () => {
+    const provider = ResoftStarter.resolveProvider({ provider: "deepseek", context: 64000 })
+    expect(provider.model.context).toBe(64000)
+  })
+
+  test("resolveProvider honors an output override passed via input", () => {
+    const provider = ResoftStarter.resolveProvider({ provider: "openai", output: 4096 })
+    expect(provider.model.output).toBe(4096)
+  })
+
+  test("resolveProvider falls back to preset default when no override is given", () => {
+    const provider = ResoftStarter.resolveProvider({ provider: "openai" })
+    expect(provider.model.context).toBe(128000)
+  })
+})
