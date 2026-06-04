@@ -367,3 +367,35 @@ describe("kilo resoft end-to-end", () => {
     }
   })
 })
+
+describe("kilo resoft init --with-mcp", () => {
+  test("writes a .kilo/mcp.json that points at the mock server", async () => {
+    await using tmp = await tmpdir()
+    await run(["resoft", "init", "--with-mcp", "--dir", tmp.path])
+    const mcpPath = path.join(tmp.path, ".kilo", "mcp.json")
+    expect(await Bun.file(mcpPath).exists()).toBe(true)
+    const parsed = JSON.parse(await Bun.file(mcpPath).text()) as {
+      mcp: Record<string, { type: string; command: string[] }>
+    }
+    expect(parsed.mcp["resoft-mock-sql"].type).toBe("local")
+    expect(parsed.mcp["resoft-mock-sql"].command[2]).toContain("mcp-mock-server")
+  })
+
+  test("init without --with-mcp does not write .kilo/mcp.json", async () => {
+    await using tmp = await tmpdir()
+    await run(["resoft", "init", "--dir", tmp.path])
+    expect(await Bun.file(path.join(tmp.path, ".kilo", "mcp.json")).exists()).toBe(false)
+  })
+
+  test("--with-mcp respects --force for an existing mcp.json", async () => {
+    await using tmp = await tmpdir()
+    await run(["resoft", "init", "--with-mcp", "--dir", tmp.path])
+    const mcpPath = path.join(tmp.path, ".kilo", "mcp.json")
+    // Tamper so we can detect a force overwrite.
+    await Bun.write(mcpPath, '{"tampered":true}')
+    await run(["resoft", "init", "--with-mcp", "--force", "--dir", tmp.path])
+    const after = JSON.parse(await Bun.file(mcpPath).text()) as Record<string, unknown>
+    expect(after.tampered).toBeUndefined()
+    expect((after as { mcp?: unknown }).mcp).toBeDefined()
+  })
+})

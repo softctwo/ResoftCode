@@ -528,3 +528,25 @@ describe("Resoft starter agent tool allowlists", () => {
     }
   })
 })
+
+describe("ResoftStarter.mcpConfigTemplate", () => {
+  test("emits a parseable mcp config with the mock-sql server", () => {
+    const text = ResoftStarter.mcpConfigTemplate()
+    const parsed = JSON.parse(text) as {
+      mcp: Record<string, { type: string; command: string[]; enabled: boolean; timeout: number }>
+    }
+    expect(parsed.mcp["resoft-mock-sql"]).toBeDefined()
+    expect(parsed.mcp["resoft-mock-sql"].type).toBe("local")
+    expect(parsed.mcp["resoft-mock-sql"].command[0]).toBe("bun")
+    expect(parsed.mcp["resoft-mock-sql"].command[1]).toBe("run")
+    expect(parsed.mcp["resoft-mock-sql"].command[2]).toContain("mcp-mock-server")
+    expect(parsed.mcp["resoft-mock-sql"].enabled).toBe(true)
+    expect(parsed.mcp["resoft-mock-sql"].timeout).toBeGreaterThan(0)
+  })
+
+  test("serverPath override replaces the default command target", () => {
+    const text = ResoftStarter.mcpConfigTemplate({ serverPath: "/opt/resoft/mock.js" })
+    const parsed = JSON.parse(text) as { mcp: Record<string, { command: string[] }> }
+    expect(parsed.mcp["resoft-mock-sql"].command).toEqual(["bun", "run", "/opt/resoft/mock.js"])
+  })
+})

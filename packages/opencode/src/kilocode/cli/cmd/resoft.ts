@@ -1,4 +1,5 @@
 import path from "path"
+import fs from "fs/promises"
 import { cmd } from "@/cli/cmd/cmd"
 import { UI } from "@/cli/ui"
 import { Brand } from "@/kilocode/brand"
@@ -129,6 +130,16 @@ export const ResoftCommand = cmd({
               .option("model-name", {
                 type: "string",
                 describe: "override model display name",
+              })
+              // kilocode_change - opt-in: also write a .kilo/mcp.json that wires the
+              // resoft mock SQL MCP server so the V1 starter's data-aware
+              // agents (quality-analyst, etl-developer, data-tester,
+              // data-analyst) have something concrete to call during local
+              // development and demos.
+              .option("with-mcp", {
+                type: "boolean",
+                default: false,
+                describe: "also write a .kilo/mcp.json that wires the resoft mock SQL MCP server",
               }),
           handler: async (args) => {
             const dir = path.resolve(args.dir ?? process.cwd())
@@ -164,6 +175,20 @@ export const ResoftCommand = cmd({
             for (const file of result.skipped) UI.println(`  skip  ${file}`)
             if (result.skipped.length > 0 && !args.force)
               UI.println("  use --force to overwrite existing files")
+            // kilocode_change - opt-in: emit .kilo/mcp.json alongside the starter
+            if (args["with-mcp"]) {
+              const mcpPath = path.join(dir, ".kilo", "mcp.json")
+              const exists = await Bun.file(mcpPath).exists()
+              if (exists && !args.force) {
+                UI.println(`  skip  .kilo/mcp.json`)
+              } else {
+                if (!args["dry-run"]) {
+                  await fs.mkdir(path.dirname(mcpPath), { recursive: true })
+                  await Bun.write(mcpPath, ResoftStarter.mcpConfigTemplate())
+                }
+                UI.println(`  write .kilo/mcp.json`)
+              }
+            }
           },
         }),
       )
