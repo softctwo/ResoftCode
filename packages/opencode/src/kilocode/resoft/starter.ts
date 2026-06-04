@@ -357,54 +357,63 @@ export namespace ResoftStarter {
   const agents = [
     {
       id: "business-analyst",
+      tools: ["read", "glob", "grep", "todowrite", "skill"],
       description: "Regulatory reporting business analysis agent.",
       prompt:
         "Map regulatory requirements to reporting scope, data owners, business terms, rules, assumptions, and open questions. Produce an acceptance-ready business contract with field-level interpretation and traceability.",
     },
     {
       id: "quality-analyst",
+      tools: ["read", "glob", "grep", "bash", "todowrite", "skill"],
       description: "Data quality analysis agent.",
       prompt:
         "Analyze source data quality for completeness, uniqueness, consistency, timeliness, validity, and reconciliation risk. Produce executable quality checks, thresholds, exception handling, and evidence requirements.",
     },
     {
       id: "etl-developer",
+      tools: ["read", "write", "edit", "glob", "grep", "bash", "todowrite", "skill"],
       description: "ETL development agent.",
       prompt:
         "Design and implement regulatory ETL logic from source contracts to target reporting datasets. Prefer explicit transformations, idempotent jobs, lineage notes, and rollback-safe scripts.",
     },
     {
       id: "data-tester",
+      tools: ["read", "write", "edit", "glob", "grep", "bash", "todowrite", "skill"],
       description: "Data testing agent.",
       prompt:
         "Create data tests for mappings, joins, aggregates, boundaries, null handling, historical periods, reconciliation totals, and regulatory output assertions. Report pass/fail evidence and residual risk.",
     },
     {
       id: "testdata-builder",
+      tools: ["read", "write", "edit", "glob", "grep", "bash", "todowrite"],
       description: "Test data construction agent.",
       prompt:
         "Construct compact test datasets that cover normal cases, edge cases, bad data, missing data, reconciliation breaks, and regulation-specific scenarios. Keep fixtures deterministic and auditable.",
     },
     {
       id: "script-developer",
+      tools: ["read", "write", "edit", "glob", "grep", "bash", "todowrite"],
       description: "Script development agent.",
       prompt:
         "Build operational scripts for validation, export, packaging, comparison, scheduling support, and evidence collection. Keep scripts parameterized, logged, and repeatable.",
     },
     {
       id: "data-analyst",
+      tools: ["read", "glob", "grep", "bash", "todowrite", "skill"],
       description: "Data analysis agent.",
       prompt:
         "Investigate metric changes, source-to-report variances, anomaly drivers, and trend breaks. Produce concise analysis with reviewed dimensions, denominators, sample sizes, and caveats.",
     },
     {
       id: "regulatory-reporter",
+      tools: ["read", "glob", "grep", "todowrite", "skill"],
       description: "Regulatory reporting agent.",
       prompt:
         "Assemble the final regulatory reporting package: target files, validation result, reconciliation summary, evidence manifest, unresolved issues, and sign-off checklist.",
     },
     {
       id: "regulation-interpreter",
+      tools: ["read", "glob", "grep", "webfetch", "todowrite", "skill"],
       description: "Regulation interpretation agent.",
       prompt:
         "Interpret policies, regulatory notices, and reporting instructions. Extract obligations, scope, deadlines, field definitions, exceptions, and change impact without inventing unstated rules.",
@@ -502,10 +511,17 @@ Stop only when the deliverable is either ready for review with evidence, or bloc
 
   function buildAgent(agent: (typeof agents)[number], provider: Provider): string {
     const modelRef = `${provider.id}/${provider.model.id}`
+    // Deny-by-default tool allowlist: anything not listed is denied.
+    // Mirrors the convention used by `.opencode/agent/triage.md` and keeps
+    // each regulatory agent scoped to the tools its role actually needs.
+    const toolEntries = [`  "*": false`, ...agent.tools.map((t) => `  "${t}": true`)]
+    const toolsBlock = toolEntries.join("\n")
     return `---
 description: ${agent.description}
 mode: subagent
 model: "${modelRef}"
+tools:
+${toolsBlock}
 ---
 You are the ${Brand.product} ${agent.id} agent.
 

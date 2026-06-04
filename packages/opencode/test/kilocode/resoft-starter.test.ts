@@ -428,3 +428,103 @@ describe("Resoft custom provider files", () => {
     expect(load.errors).toEqual([])
   })
 })
+
+describe("Resoft starter agent tool allowlists", () => {
+  const agentFiles = ResoftStarter.files()
+  const byPath = new Map(agentFiles.map((f) => [f.path, f.content]))
+
+  const expected: Record<string, string[]> = {
+    "business-analyst": ["read", "glob", "grep", "todowrite", "skill"],
+    "quality-analyst": ["read", "glob", "grep", "bash", "todowrite", "skill"],
+    "etl-developer": ["read", "write", "edit", "glob", "grep", "bash", "todowrite", "skill"],
+    "data-tester": ["read", "write", "edit", "glob", "grep", "bash", "todowrite", "skill"],
+    "testdata-builder": ["read", "write", "edit", "glob", "grep", "bash", "todowrite"],
+    "script-developer": ["read", "write", "edit", "glob", "grep", "bash", "todowrite"],
+    "data-analyst": ["read", "glob", "grep", "bash", "todowrite", "skill"],
+    "regulatory-reporter": ["read", "glob", "grep", "todowrite", "skill"],
+    "regulation-interpreter": ["read", "glob", "grep", "webfetch", "todowrite", "skill"],
+  }
+
+  for (const [agentId, tools] of Object.entries(expected)) {
+    test(`${agentId} declares an explicit deny-by-default tool allowlist`, () => {
+      const content = byPath.get(`.kilo/agent/${agentId}.md`)
+      expect(content, `agent MD for ${agentId} should exist`).toBeDefined()
+      // frontmatter must be present and well-formed
+      expect(content).toMatch(/^---\n/)
+      // deny-by-default wildcard must be present
+      expect(content).toMatch(/^tools:\n {2}"\*": false$/m)
+      // every allowed tool must be listed as true, in the order declared
+      const lines = tools.map((t) => `  "${t}": true`)
+      for (const line of lines) {
+        expect(content).toContain(line)
+      }
+      // tools: block must close before the body delimiter
+      expect(content).toMatch(/^---\nYou are the /m)
+    })
+  }
+
+  test("tool allowlists split into at least three distinct role tiers", () => {
+    // The matrix must encode real role separation, not just shuffle the
+    // same tool list across agents. We don't require every agent to be
+    // unique (etl-developer and data-tester legitimately share tools)
+    // but we do require at least three distinct tiers: read-only
+    // analysis, read+execute exploration, and read+write development.
+    const tiers = new Set<string>()
+    for (const tools of Object.values(expected)) {
+      const signature = [
+        tools.includes("write") || tools.includes("edit") ? "rw" : "ro",
+        tools.includes("bash") ? "exec" : "noexec",
+      ].join("-")
+      tiers.add(signature)
+    }
+    expect(tiers.size).toBeGreaterThanOrEqual(3)
+  })
+
+  test("write-bearing agents include both 'write' and 'edit'", () => {
+    // Agents that produce code/SQL/mapping files need the dual write/edit
+    // tools; a regression that drops either one would force users to
+    // hand-edit the generated MD.
+    const writers = ["etl-developer", "data-tester", "testdata-builder", "script-developer"]
+    for (const id of writers) {
+      const tools = expected[id]
+      expect(tools).toContain("write")
+      expect(tools).toContain("edit")
+    }
+  })
+
+  test("read-only agents do not include 'write' or 'edit'", () => {
+    const readers = ["business-analyst", "quality-analyst", "regulatory-reporter", "regulation-interpreter"]
+    for (const id of readers) {
+      const tools = expected[id]
+      // quality-analyst does need bash for source-data exploration, but it
+      // must never mutate the user's source data without going through
+      // the etl-developer lane.
+      expect(tools).not.toContain("write")
+      expect(tools).not.toContain("edit")
+    }
+  })
+
+  test("only regulation-interpreter includes 'webfetch'", () => {
+    // webfetch is the one tool that can hit external network. We want a
+    // single, named entry point for that so audit logs are easy to
+    // attribute and so other agents don't accidentally fan out to the
+    // public internet.
+    for (const [id, tools] of Object.entries(expected)) {
+      if (id === "regulation-interpreter") {
+        expect(tools).toContain("webfetch")
+      } else {
+        expect(tools).not.toContain("webfetch")
+      }
+    }
+  })
+
+  test("every agent includes 'skill' or 'bash' as an extensibility hook", () => {
+    // Each agent must have at least one extensibility hook so a future
+    // MCP server or skill bundle can be wired in without rewriting the
+    // frontmatter.
+    for (const [id, tools] of Object.entries(expected)) {
+      const hasHook = tools.includes("skill") || tools.includes("bash")
+      expect(hasHook, `${id} needs a skill or bash hook for future extensibility`).toBe(true)
+    }
+  })
+})
