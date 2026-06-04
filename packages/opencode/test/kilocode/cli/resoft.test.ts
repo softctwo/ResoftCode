@@ -1,8 +1,20 @@
-import { describe, expect, test } from "bun:test"
+import { afterAll, describe, expect, test } from "bun:test"
 import path from "path"
 import yargs from "yargs"
 import { tmpdir } from "../../fixture/fixture"
 import { ResoftCommand, ResoftStartCommand } from "../../../src/kilocode/cli/cmd/resoft"
+
+// yargs's strict-mode fail handler sets `process.exitCode` on the `init
+// --provider gibberish` and the strict-env validation paths. Even though the
+// individual tests restore `process.exitCode = orig` in their finally blocks,
+// yargs occasionally re-asserts the non-zero code from a later microtask, and
+// `bun test` then exits the file process with that non-zero code — which makes
+// `script/test-runner.ts` (used by CI) report this file as a failure even
+// though every individual test passed. Force the file-level exit code to 0
+// after all tests have run.
+afterAll(() => {
+  process.exitCode = 0
+})
 
 async function run(args: string[]) {
   return yargs(args).scriptName("resoft").command(ResoftStartCommand).command(ResoftCommand).strict().parseAsync()
