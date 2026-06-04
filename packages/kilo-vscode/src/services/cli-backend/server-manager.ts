@@ -19,6 +19,58 @@ const STARTUP_TIMEOUT_SECONDS = 30
 type WorkspaceFolderLike = { uri: { fsPath: string } }
 type ServerExitListener = (code: number | null) => void
 
+// kilocode_change start - Resoft bridge: prefer a system-installed resoftcode binary when configured
+export type ResoftBridgeOptions = {
+  enabled: boolean
+  prefer: "resoftcode" | "resoft" | "auto"
+  executablePath?: string
+}
+
+export type ResolvedCli = {
+  path: string
+  via: "bundled" | "resoft-bridge"
+}
+
+const RESOFT_BRIDGE_BINARIES = ["resoftcode", "resoft"] as const
+
+function whichBinary(bin: string): string | null {
+  // Minimal cross-platform which: scan PATH for an executable file matching
+  // the candidate binary name. Returns absolute path or null.
+  const dirs = (process.env["PATH"] ?? "").split(path.delimiter).filter(Boolean)
+  const exts = process.platform === "win32"
+    ? (process.env["PATHEXT"] ?? ".EXE;.CMD;.BAT").split(";")
+    : [""]
+  for (const dir of dirs) {
+    for (const ext of exts) {
+      const candidate = path.join(dir, bin + ext)
+      try {
+        if (fs.statSync(candidate).isFile()) return candidate
+      } catch {
+        // missing / not a file — keep scanning
+      }
+    }
+  }
+  return null
+}
+
+export function resolveCliPath(bundledPath: string, options: ResoftBridgeOptions): ResolvedCli {
+  if (!options.enabled) return { path: bundledPath, via: "bundled" }
+  if (options.executablePath && fs.existsSync(options.executablePath)) {
+    return { path: options.executablePath, via: "resoft-bridge" }
+  }
+  const order = options.prefer === "resoft"
+    ? (["resoft", "resoftcode"] as const)
+    : options.prefer === "resoftcode"
+      ? (["resoftcode", "resoft"] as const)
+      : RESOFT_BRIDGE_BINARIES
+  for (const bin of order) {
+    const found = whichBinary(bin)
+    if (found) return { path: found, via: "resoft-bridge" }
+  }
+  return { path: bundledPath, via: "bundled" }
+}
+// kilocode_change end
+
 export function resolveServerCwd(folders: readonly WorkspaceFolderLike[] | undefined, storage: string): string {
   return folders?.[0]?.uri.fsPath ?? storage
 }
@@ -129,6 +181,8 @@ export class ServerManager {
           ...indexingEnv,
           KILO_TELEMETRY_LEVEL: vscode.env.isTelemetryEnabled ? "all" : "off",
           KILO_APP_NAME: "kilo-code",
+          // kilocode_change - signal Resoft bridge mode to the spawned CLI
+          ...(this.resolvedCli?.via === "resoft-bridge" ? { RESOFT_CLI: "1" } : {}),
           KILO_EDITOR_NAME: vscode.env.appName,
           KILO_PLATFORM: "vscode",
           KILO_MACHINE_ID: vscode.env.machineId,
@@ -202,12 +256,27 @@ export class ServerManager {
     })
   }
 
+  // kilocode_change - cached Resoft bridge resolution reused across getServer calls
+  private resolvedCli: ResolvedCli | null = null
+
   private getCliPath(): string {
-    // Always use the bundled binary from the extension directory
-    const binName = process.platform === "win32" ? "kilo.exe" : "kilo"
-    const cliPath = path.join(this.context.extensionPath, "bin", binName)
-    console.log("[Kilo New] ServerManager: 📦 Using CLI path:", cliPath)
-    return cliPath
+    if (!this.resolvedCli) {
+      const binName = process.platform === "win32" ? "kilo.exe" : "kilo"
+      const bundled = path.join(this.context.extensionPath, "bin", binName)
+      const cfg = vscode.workspace.getConfiguration("kilo-code.new")
+      this.resolvedCli = resolveCliPath(bundled, {
+        enabled: cfg.get<boolean>("resoftBridge.enabled", false),
+        prefer: cfg.get<"resoftcode" | "resoft" | "auto">("resoftBridge.prefer", "auto"),
+        executablePath: cfg.get<string>("resoftBridge.executablePath", "").trim() || undefined,
+      })
+      console.log(
+        "[Kilo New] ServerManager: 📦 Using CLI path:",
+        this.resolvedCli.path,
+        "via:",
+        this.resolvedCli.via,
+      )
+    }
+    return this.resolvedCli.path
   }
 
   /**

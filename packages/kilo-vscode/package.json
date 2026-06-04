@@ -912,6 +912,26 @@
           "default": "",
           "description": "Absolute path to a PEM file containing extra CA certificates to trust when the Kilo backend makes HTTPS requests (sets NODE_EXTRA_CA_CERTS on the CLI process). Use this if you're behind a corporate proxy that performs SSL inspection. Leave empty to rely on the OS trust store."
         },
+        "kilo-code.new.resoftBridge.enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "%kilo-code.new.resoftBridge.enabled.description%"
+        },
+        "kilo-code.new.resoftBridge.prefer": {
+          "type": "string",
+          "enum": [
+            "resoftcode",
+            "resoft",
+            "auto"
+          ],
+          "default": "auto",
+          "description": "%kilo-code.new.resoftBridge.prefer.description%"
+        },
+        "kilo-code.new.resoftBridge.executablePath": {
+          "type": "string",
+          "default": "",
+          "description": "%kilo-code.new.resoftBridge.executablePath.description%"
+        },
         "kilo-code.new.autoApprove.enabled": {
           "type": "boolean",
           "default": false,
