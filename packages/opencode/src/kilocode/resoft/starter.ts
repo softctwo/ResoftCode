@@ -679,23 +679,26 @@ Rules:
     }
   }
 
-  // kilocode_change - render a `.kilo/mcp.json` template that wires the
-  // resoft mock SQL MCP server. The default command resolves to the dev
-  // path of the mock server source; callers can override with `serverPath`
-  // when running from a packaged install.
+  // kilocode_change - render the `mcp` config block that wires the
+  // resoft mock SQL MCP server into the project kilo.jsonc. The default
+  // command resolves to the dev path of the mock server source; callers
+  // can override with `serverPath` when running from a packaged install.
+  // The block is a JSON fragment meant to be merged into kilo.jsonc (kilo
+  // reads MCP config from the `mcp:` field of the project config, not from
+  // a separate `.kilo/mcp.json` file), so the handler re-reads
+  // `kilo.jsonc` after `install()` and inserts this block before the
+  // closing brace.
   export function mcpConfigTemplate(options: { serverPath?: string } = {}): string {
     const serverPath = options.serverPath ?? "packages/opencode/src/kilocode/resoft/mcp-mock-server.ts"
     const config = {
-      mcp: {
-        "resoft-mock-sql": {
-          type: "local" as const,
-          command: ["bun", "run", serverPath],
-          enabled: true,
-          timeout: 10000,
-        },
+      "resoft-mock-sql": {
+        type: "local" as const,
+        command: ["bun", "run", serverPath],
+        enabled: true,
+        timeout: 10000,
       },
     }
-    return JSON.stringify(config, null, 2) + "\n"
+    return JSON.stringify(config, null, 2)
   }
 
   export async function install(input: InstallInput): Promise<Result> {

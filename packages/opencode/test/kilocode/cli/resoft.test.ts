@@ -369,33 +369,42 @@ describe("kilo resoft end-to-end", () => {
 })
 
 describe("kilo resoft init --with-mcp", () => {
-  test("writes a .kilo/mcp.json that points at the mock server", async () => {
+  test("merges an mcp block into kilo.jsonc pointing at the mock server", async () => {
     await using tmp = await tmpdir()
     await run(["resoft", "init", "--with-mcp", "--dir", tmp.path])
-    const mcpPath = path.join(tmp.path, ".kilo", "mcp.json")
-    expect(await Bun.file(mcpPath).exists()).toBe(true)
-    const parsed = JSON.parse(await Bun.file(mcpPath).text()) as {
+    // kilo reads MCP config from the `mcp:` field of kilo.jsonc, not
+    // from a separate .kilo/mcp.json file.
+    const cfg = JSON.parse(await Bun.file(path.join(tmp.path, "kilo.jsonc")).text()) as {
       mcp: Record<string, { type: string; command: string[] }>
     }
-    expect(parsed.mcp["resoft-mock-sql"].type).toBe("local")
-    expect(parsed.mcp["resoft-mock-sql"].command[2]).toContain("mcp-mock-server")
-  })
-
-  test("init without --with-mcp does not write .kilo/mcp.json", async () => {
-    await using tmp = await tmpdir()
-    await run(["resoft", "init", "--dir", tmp.path])
+    expect(cfg.mcp).toBeDefined()
+    expect(cfg.mcp["resoft-mock-sql"].type).toBe("local")
+    expect(cfg.mcp["resoft-mock-sql"].command[2]).toContain("mcp-mock-server")
     expect(await Bun.file(path.join(tmp.path, ".kilo", "mcp.json")).exists()).toBe(false)
   })
 
-  test("--with-mcp respects --force for an existing mcp.json", async () => {
+  test("init without --with-mcp does not add mcp to kilo.jsonc", async () => {
+    await using tmp = await tmpdir()
+    await run(["resoft", "init", "--dir", tmp.path])
+    const cfg = JSON.parse(await Bun.file(path.join(tmp.path, "kilo.jsonc")).text()) as {
+      mcp?: unknown
+    }
+    expect(cfg.mcp).toBeUndefined()
+  })
+
+  test("--with-mcp --force re-merges the mcp block into kilo.jsonc", async () => {
     await using tmp = await tmpdir()
     await run(["resoft", "init", "--with-mcp", "--dir", tmp.path])
-    const mcpPath = path.join(tmp.path, ".kilo", "mcp.json")
-    // Tamper so we can detect a force overwrite.
-    await Bun.write(mcpPath, '{"tampered":true}')
+    // Tamper with the model field so we can detect the force re-merge.
+    const cfgPath = path.join(tmp.path, "kilo.jsonc")
+    const cfg = JSON.parse(await Bun.file(cfgPath).text()) as Record<string, unknown>
+    cfg["model"] = "tampered/model"
+    await Bun.write(cfgPath, JSON.stringify(cfg, null, 2) + "\n")
+    // Re-run with --with-mcp and --force: the init() also re-writes
+    // kilo.jsonc, which restores the original model AND merges mcp.
     await run(["resoft", "init", "--with-mcp", "--force", "--dir", tmp.path])
-    const after = JSON.parse(await Bun.file(mcpPath).text()) as Record<string, unknown>
-    expect(after.tampered).toBeUndefined()
-    expect((after as { mcp?: unknown }).mcp).toBeDefined()
+    const after = JSON.parse(await Bun.file(cfgPath).text()) as Record<string, unknown>
+    expect(after.model).not.toBe("tampered/model")
+    expect(after.mcp).toBeDefined()
   })
 })

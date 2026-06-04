@@ -530,23 +530,33 @@ describe("Resoft starter agent tool allowlists", () => {
 })
 
 describe("ResoftStarter.mcpConfigTemplate", () => {
-  test("emits a parseable mcp config with the mock-sql server", () => {
+  test("emits a parseable mcp block with the mock-sql server", () => {
+    // The block is intended to be merged into kilo.jsonc under the `mcp:`
+    // key, not written to a standalone file.
     const text = ResoftStarter.mcpConfigTemplate()
-    const parsed = JSON.parse(text) as {
-      mcp: Record<string, { type: string; command: string[]; enabled: boolean; timeout: number }>
-    }
-    expect(parsed.mcp["resoft-mock-sql"]).toBeDefined()
-    expect(parsed.mcp["resoft-mock-sql"].type).toBe("local")
-    expect(parsed.mcp["resoft-mock-sql"].command[0]).toBe("bun")
-    expect(parsed.mcp["resoft-mock-sql"].command[1]).toBe("run")
-    expect(parsed.mcp["resoft-mock-sql"].command[2]).toContain("mcp-mock-server")
-    expect(parsed.mcp["resoft-mock-sql"].enabled).toBe(true)
-    expect(parsed.mcp["resoft-mock-sql"].timeout).toBeGreaterThan(0)
+    const parsed = JSON.parse(text) as Record<string, { type: string; command: string[]; enabled: boolean; timeout: number }>
+    expect(parsed["resoft-mock-sql"]).toBeDefined()
+    expect(parsed["resoft-mock-sql"].type).toBe("local")
+    expect(parsed["resoft-mock-sql"].command[0]).toBe("bun")
+    expect(parsed["resoft-mock-sql"].command[1]).toBe("run")
+    expect(parsed["resoft-mock-sql"].command[2]).toContain("mcp-mock-server")
+    expect(parsed["resoft-mock-sql"].enabled).toBe(true)
+    expect(parsed["resoft-mock-sql"].timeout).toBeGreaterThan(0)
   })
 
   test("serverPath override replaces the default command target", () => {
     const text = ResoftStarter.mcpConfigTemplate({ serverPath: "/opt/resoft/mock.js" })
-    const parsed = JSON.parse(text) as { mcp: Record<string, { command: string[] }> }
-    expect(parsed.mcp["resoft-mock-sql"].command).toEqual(["bun", "run", "/opt/resoft/mock.js"])
+    const parsed = JSON.parse(text) as Record<string, { command: string[] }>
+    expect(parsed["resoft-mock-sql"].command).toEqual(["bun", "run", "/opt/resoft/mock.js"])
+  })
+
+  test("output is a JSON object fragment, not a wrapped config", () => {
+    // Guard against accidentally re-introducing the old
+    // { "mcp": { ... } } wrapper, which would double-nest under
+    // kilo.jsonc['mcp'] = { 'mcp': { 'resoft-mock-sql': ... } }.
+    const text = ResoftStarter.mcpConfigTemplate()
+    const parsed = JSON.parse(text) as Record<string, unknown>
+    expect(parsed["mcp"]).toBeUndefined()
+    expect(parsed["resoft-mock-sql"]).toBeDefined()
   })
 })

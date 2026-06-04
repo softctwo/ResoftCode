@@ -175,18 +175,23 @@ export const ResoftCommand = cmd({
             for (const file of result.skipped) UI.println(`  skip  ${file}`)
             if (result.skipped.length > 0 && !args.force)
               UI.println("  use --force to overwrite existing files")
-            // kilocode_change - opt-in: emit .kilo/mcp.json alongside the starter
+            // kilocode_change - opt-in: merge an `mcp` block into kilo.jsonc so
+            // the kilo CLI spawns the resoft mock SQL MCP server alongside
+            // the model provider. kilo reads MCP config from the `mcp:`
+            // field of the project config, not from a separate
+            // `.kilo/mcp.json` file, so we update kilo.jsonc in place
+            // rather than emitting a sibling file.
             if (args["with-mcp"]) {
-              const mcpPath = path.join(dir, ".kilo", "mcp.json")
-              const exists = await Bun.file(mcpPath).exists()
-              if (exists && !args.force) {
-                UI.println(`  skip  .kilo/mcp.json`)
-              } else {
+              const cfgPath = path.join(dir, "kilo.jsonc")
+              if (await Bun.file(cfgPath).exists()) {
+                const raw = await Bun.file(cfgPath).text()
+                const parsed = JSON.parse(raw) as Record<string, unknown>
+                const block = JSON.parse(ResoftStarter.mcpConfigTemplate()) as Record<string, unknown>
+                parsed["mcp"] = block
                 if (!args["dry-run"]) {
-                  await fs.mkdir(path.dirname(mcpPath), { recursive: true })
-                  await Bun.write(mcpPath, ResoftStarter.mcpConfigTemplate())
+                  await Bun.write(cfgPath, JSON.stringify(parsed, null, 2) + "\n")
                 }
-                UI.println(`  write .kilo/mcp.json`)
+                UI.println(`  merge mcp into kilo.jsonc`)
               }
             }
           },
