@@ -7,3 +7,10 @@ test("bin/kilo parses", async () => {
   const code = (await file.text()).replace(/^#![^\n]*\n/, "")
   expect(() => new Function(code)).not.toThrow()
 })
+
+test("bin/resoft parses and marks resoft launches", async () => {
+  const file = Bun.file(path.join(import.meta.dir, "..", "..", "bin", "resoft"))
+  const code = (await file.text()).replace(/^#![^\n]*\n/, "")
+  expect(() => new Function(code)).not.toThrow()
+  expect(code).toContain('process.env.RESOFT_CLI = "1"')
+})

@@ -51,7 +51,7 @@ interface Args {
 
 export const ProfileCommand = cmd({
   command: "profile",
-  describe: "show Kilo account profile",
+  describe: "show Resoft CodingAgent account profile",
   builder: (yargs: Argv) =>
     yargs.option("json", {
       describe: "output profile as JSON",

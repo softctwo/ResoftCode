@@ -91,7 +91,7 @@ On some systems and npm versions, installing `@kilocode/cli` can create a hidden
 
 ### Install from GitHub Releases (Optional)
 
-Download the latest binary or source code from the [Releases page](https://github.com/Kilo-Org/kilocode/releases), use this quick guide:
+Download the latest binary or source code from the [Releases page](https://github.com/softctwo/Resoftcode/releases), use this quick guide:
 
 - `kilo-<os>-<arch>.zip` is the CLI binary for your OS and CPU architecture on Windows and macOS. (`kilo-linux-<arch>.tar.gz` for Linux)
 - `darwin` means macOS.

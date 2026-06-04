@@ -106,8 +106,17 @@ let arch = archMap[os.arch()]
 if (!arch) {
   arch = os.arch()
 }
-const base = "@kilocode/cli-" + platform + "-" + arch
-const binary = platform === "windows" ? "kilo.exe" : "kilo"
+// resoft_change start - canonical China Resoft scope with legacy fallbacks
+const base = "@chinaresoft/resoftcode-" + platform + "-" + arch
+const scopeBase = "@chinaresoft/cli-" + platform + "-" + arch
+const priorBase = "@resoft/cli-" + platform + "-" + arch
+const legacyBase = "@kilocode/cli-" + platform + "-" + arch
+// resoft_change end
+// resoft_change start - prefer resoft binary, fall back to legacy kilo
+const primaryBinary = platform === "windows" ? "resoftcode.exe" : "resoftcode"
+const scopeBinary = platform === "windows" ? "resoft.exe" : "resoft"
+const legacyBinary = platform === "windows" ? "kilo.exe" : "kilo"
+// resoft_change end
 
 function supportsAvx2() {
   if (arch !== "x64") return false
@@ -160,48 +169,53 @@ function supportsAvx2() {
 }
 
 const names = (() => {
-  const avx2 = supportsAvx2()
-  const baseline = arch === "x64" && !avx2
+  // resoft_change start - prefer @chinaresoft/resoftcode-* and keep prior scopes as fallbacks
+  const expand = (prefix) => {
+    const avx2 = supportsAvx2()
+    const baseline = arch === "x64" && !avx2
 
-  if (platform === "linux") {
-    const musl = (() => {
-      try {
-        if (fs.existsSync("/etc/alpine-release")) return true
-      } catch {
-        // ignore
+    if (platform === "linux") {
+      const musl = (() => {
+        try {
+          if (fs.existsSync("/etc/alpine-release")) return true
+        } catch {
+          // ignore
+        }
+
+        try {
+          const result = childProcess.spawnSync("ldd", ["--version"], { encoding: "utf8" })
+          const text = ((result.stdout || "") + (result.stderr || "")).toLowerCase()
+          if (text.includes("musl")) return true
+        } catch {
+          // ignore
+        }
+
+        return false
+      })()
+
+      if (musl) {
+        if (arch === "x64") {
+          if (baseline) return [`${prefix}-baseline-musl`, `${prefix}-musl`, `${prefix}-baseline`, prefix]
+          return [`${prefix}-musl`, `${prefix}-baseline-musl`, prefix, `${prefix}-baseline`]
+        }
+        return [`${prefix}-musl`, prefix]
       }
 
-      try {
-        const result = childProcess.spawnSync("ldd", ["--version"], { encoding: "utf8" })
-        const text = ((result.stdout || "") + (result.stderr || "")).toLowerCase()
-        if (text.includes("musl")) return true
-      } catch {
-        // ignore
-      }
-
-      return false
-    })()
-
-    if (musl) {
       if (arch === "x64") {
-        if (baseline) return [`${base}-baseline-musl`, `${base}-musl`, `${base}-baseline`, base]
-        return [`${base}-musl`, `${base}-baseline-musl`, base, `${base}-baseline`]
+        if (baseline) return [`${prefix}-baseline`, prefix, `${prefix}-baseline-musl`, `${prefix}-musl`]
+        return [prefix, `${prefix}-baseline`, `${prefix}-musl`, `${prefix}-baseline-musl`]
       }
-      return [`${base}-musl`, base]
+      return [prefix, `${prefix}-musl`]
     }
 
     if (arch === "x64") {
-      if (baseline) return [`${base}-baseline`, base, `${base}-baseline-musl`, `${base}-musl`]
-      return [base, `${base}-baseline`, `${base}-musl`, `${base}-baseline-musl`]
+      if (baseline) return [`${prefix}-baseline`, prefix]
+      return [prefix, `${prefix}-baseline`]
     }
-    return [base, `${base}-musl`]
+    return [prefix]
   }
-
-  if (arch === "x64") {
-    if (baseline) return [`${base}-baseline`, base]
-    return [base, `${base}-baseline`]
-  }
-  return [base]
+  return [...expand(base), ...expand(scopeBase), ...expand(priorBase), ...expand(legacyBase)]
+  // resoft_change end
 })()
 
 function findBinary(startDir) {
@@ -210,8 +224,10 @@ function findBinary(startDir) {
     const modules = path.join(current, "node_modules")
     if (fs.existsSync(modules)) {
       for (const name of names) {
-        const candidate = path.join(modules, name, "bin", binary)
-        if (fs.existsSync(candidate)) return candidate
+        for (const binaryName of [primaryBinary, scopeBinary, legacyBinary]) {
+          const candidate = path.join(modules, name, "bin", binaryName)
+          if (fs.existsSync(candidate)) return candidate
+        }
       }
     }
     const parent = path.dirname(current)
@@ -225,7 +241,7 @@ function findBinary(startDir) {
 const resolved = envPath || (fs.existsSync(cached) ? cached : findBinary(scriptDir))
 if (!resolved) {
   console.error(
-    "It seems that your package manager failed to install the right version of the Kilo CLI for your platform. You can try manually installing " +
+    "It seems that your package manager failed to install the right version of the Resoft CLI for your platform. You can try manually installing " +
       names.map((n) => `\"${n}\"`).join(" or ") +
       " package",
   )

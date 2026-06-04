@@ -117,6 +117,53 @@ test("preserves temperature support from existing provider models", async () => 
   expect(models["brand-new"].capabilities.temperature).toBe(true)
 })
 
+test("ignores partial experimental models without failing valid model discovery", async () => {
+  globalThis.fetch = mock(() =>
+    Promise.resolve(
+      new Response(
+        JSON.stringify({
+          data: [
+            {
+              model_picker_enabled: true,
+              id: "valid",
+              name: "Valid",
+              version: "valid-2026-06-04",
+              capabilities: {
+                family: "valid",
+                limits: {
+                  max_context_window_tokens: 128000,
+                  max_output_tokens: 16000,
+                  max_prompt_tokens: 112000,
+                },
+                supports: {
+                  tool_calls: true,
+                },
+              },
+            },
+            {
+              model_picker_enabled: true,
+              id: "partial",
+              name: "Partial",
+              version: "partial-2026-06-04",
+              capabilities: {
+                family: "experimental",
+                supports: {},
+              },
+            },
+          ],
+        }),
+        { status: 200 },
+      ),
+    ),
+  ) as unknown as typeof fetch
+
+  const models = await CopilotModels.get("https://api.githubcopilot.com")
+
+  expect(models.valid.limit.context).toBe(128000)
+  expect(models.valid.capabilities.toolcall).toBe(true)
+  expect(models.partial).toBeUndefined()
+})
+
 test("clears existing variants so refreshed models calculate provider-specific variants", async () => {
   globalThis.fetch = mock(() =>
     Promise.resolve(

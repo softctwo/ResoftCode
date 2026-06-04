@@ -1,5 +1,6 @@
 import { For } from "solid-js"
 import { DEFAULT_THEMES, useTheme } from "@tui/context/theme"
+import { Brand } from "@/kilocode/brand"
 
 const themeCount = Object.keys(DEFAULT_THEMES).length
 const themeTip = `Use {highlight}/themes{/highlight} or {highlight}Ctrl+X T{/highlight} to switch between ${themeCount} built-in themes`
@@ -48,7 +49,7 @@ export function Tips(props: { tip?: string }) {
   )
 }
 
-// Curated tips for Kilo CLI
+// Curated tips for the branded CLI
 const TIPS = [
   "Type {highlight}@{/highlight} followed by a filename to fuzzy search and attach files",
   "Start a message with {highlight}!{/highlight} to run shell commands directly (e.g., {highlight}!ls -la{/highlight})",
@@ -80,32 +81,32 @@ const TIPS = [
   "Switch to {highlight}Plan{/highlight} agent to get suggestions without making actual changes",
   "Use {highlight}@agent-name{/highlight} in prompts to invoke specialized subagents",
   "Press {highlight}Ctrl+X Right/Left{/highlight} to cycle through parent and child sessions",
-  "Kilo can {highlight}configure itself{/highlight} if you ask it",
-  "Ask Kilo to {highlight}add Supabase MCP globally{/highlight}",
-  "Ask Kilo to {highlight}create a review agent for this project{/highlight}",
-  "Ask Kilo to {highlight}add a plugin for desktop alerts{/highlight}",
-  "Ask Kilo to {highlight}set Claude Sonnet as my default model{/highlight}",
-  "Ask Kilo to {highlight}make my review agent read-only{/highlight}",
-  "Ask Kilo to {highlight}require approval before git push{/highlight}",
-  "Ask Kilo to {highlight}turn off auto-formatting{/highlight}",
-  "Ask Kilo to {highlight}block access to .env files{/highlight}",
-  "Ask Kilo to {highlight}turn off the F2 shortcut{/highlight}",
-  "Ask Kilo to {highlight}match my terminal theme{/highlight}",
-  "Ask Kilo to {highlight}disable sharing for all sessions{/highlight}",
-  "Ask Kilo to {highlight}add rules from docs/ai-rules.md{/highlight}",
-  "Ask Kilo to {highlight}enable tui.scroll_acceleration{/highlight} for smooth macOS-style scrolling",
-  "Ask Kilo to {highlight}save this workflow as a /command{/highlight}",
-  "Kilo auto-handles OAuth for remote MCP servers requiring auth",
-  "Kilo auto-formats files using prettier, gofmt, ruff, and more",
-  "Kilo uses LSP servers for intelligent code analysis",
-  "Use {highlight}kilo run{/highlight} for non-interactive scripting",
-  "Use {highlight}kilo --continue{/highlight} to resume the last session",
-  "Use {highlight}kilo run -f file.ts{/highlight} to attach files via CLI",
+  `${Brand.product} can {highlight}configure itself{/highlight} if you ask it`,
+  `Ask ${Brand.name} to {highlight}add Supabase MCP globally{/highlight}`,
+  `Ask ${Brand.name} to {highlight}create a review agent for this project{/highlight}`,
+  `Ask ${Brand.name} to {highlight}add a plugin for desktop alerts{/highlight}`,
+  `Ask ${Brand.name} to {highlight}set Claude Sonnet as my default model{/highlight}`,
+  `Ask ${Brand.name} to {highlight}make my review agent read-only{/highlight}`,
+  `Ask ${Brand.name} to {highlight}require approval before git push{/highlight}`,
+  `Ask ${Brand.name} to {highlight}turn off auto-formatting{/highlight}`,
+  `Ask ${Brand.name} to {highlight}block access to .env files{/highlight}`,
+  `Ask ${Brand.name} to {highlight}turn off the F2 shortcut{/highlight}`,
+  `Ask ${Brand.name} to {highlight}match my terminal theme{/highlight}`,
+  `Ask ${Brand.name} to {highlight}disable sharing for all sessions{/highlight}`,
+  `Ask ${Brand.name} to {highlight}add rules from docs/ai-rules.md{/highlight}`,
+  `Ask ${Brand.name} to {highlight}enable tui.scroll_acceleration{/highlight} for smooth macOS-style scrolling`,
+  `Ask ${Brand.name} to {highlight}save this workflow as a /command{/highlight}`,
+  `${Brand.product} auto-handles OAuth for remote MCP servers requiring auth`,
+  `${Brand.product} auto-formats files using prettier, gofmt, ruff, and more`,
+  `${Brand.product} uses LSP servers for intelligent code analysis`,
+  `Use {highlight}${Brand.cli} run{/highlight} for non-interactive scripting`,
+  `Use {highlight}${Brand.cli} --continue{/highlight} to resume the last session`,
+  `Use {highlight}${Brand.cli} run -f file.ts{/highlight} to attach files via CLI`,
   "Use {highlight}--format json{/highlight} for machine-readable output in scripts",
-  "Run {highlight}kilo serve{/highlight} for headless API access to Kilo",
-  "Use {highlight}kilo run --attach{/highlight} to connect to a running server",
-  "Run {highlight}kilo upgrade{/highlight} to update to the latest version",
-  "Run {highlight}kilo auth list{/highlight} to see all configured providers",
+  `Run {highlight}${Brand.cli} serve{/highlight} for headless API access to ${Brand.product}`,
+  `Use {highlight}${Brand.cli} run --attach{/highlight} to connect to a running server`,
+  `Run {highlight}${Brand.cli} upgrade{/highlight} to update to the latest version`,
+  `Run {highlight}${Brand.cli} auth list{/highlight} to see all configured providers`,
   "Run {highlight}/unshare{/highlight} to remove a session from public access",
   "Use {highlight}--print-logs{/highlight} flag to see detailed logs in stderr",
   "Press {highlight}Ctrl+X G{/highlight} or {highlight}/timeline{/highlight} to jump to specific messages",

@@ -1,10 +1,11 @@
 import type { TuiPlugin, TuiPluginModule } from "@kilocode/plugin/tui"
 import { createMemo, Show } from "solid-js"
 import { Tips } from "@/kilocode/components/tips"
+import { Brand } from "@/kilocode/brand"
 
 const id = "internal:home-onboarding"
 
-const ONBOARDING_TIP = "Using a free model \u2014 run {highlight}/connect{/highlight} to add your API key"
+const ONBOARDING_TIP = `Using a free model \u2014 run {highlight}/connect{/highlight} to configure ${Brand.product} providers`
 
 const tui: TuiPlugin = async (api) => {
   api.slots.register({

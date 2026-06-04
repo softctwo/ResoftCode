@@ -40,12 +40,12 @@ function print(input: Daemon.Status, json?: boolean) {
     return
   }
   if (!input.running) {
-    console.log(input.stale ? `kilo daemon stale: ${input.reason}` : `kilo daemon not running`)
+    console.log(input.stale ? `Resoft CodingAgent daemon stale: ${input.reason}` : `Resoft CodingAgent daemon not running`)
     console.log(`state: ${input.file}`)
     if (input.state?.log) console.log(`log: ${input.state.log}`)
     return
   }
-  console.log(`kilo daemon running`)
+  console.log(`Resoft CodingAgent daemon running`)
   console.log(`url: ${input.state?.url}`)
   console.log(`pid: ${input.state?.pid}`)
   console.log(`version: ${input.health?.version ?? input.state?.version}`)
@@ -56,7 +56,7 @@ function print(input: Daemon.Status, json?: boolean) {
 
 const StartCommand = cmd({
   command: "start",
-  describe: "start the local kilo daemon",
+  describe: "start the local Resoft CodingAgent daemon",
   builder: (yargs) => withJson(withNetworkOptions(yargs)),
   handler: async (args) => {
     const opts = await AppRuntime.runPromise(resolveNetworkOptions(args))
@@ -65,14 +65,14 @@ const StartCommand = cmd({
       print(result, true)
       return
     }
-    console.log(result.reused ? "kilo daemon already running" : "kilo daemon started")
+    console.log(result.reused ? "Resoft CodingAgent daemon already running" : "Resoft CodingAgent daemon started")
     print(result)
   },
 })
 
 const StatusCommand = cmd({
   command: "status",
-  describe: "show local kilo daemon status",
+  describe: "show local Resoft CodingAgent daemon status",
   builder: (yargs) => withJson(yargs),
   handler: async (args) => {
     print(await Daemon.status(), Boolean(args.json))
@@ -81,7 +81,7 @@ const StatusCommand = cmd({
 
 const StopCommand = cmd({
   command: "stop",
-  describe: "stop the local kilo daemon",
+  describe: "stop the local Resoft CodingAgent daemon",
   builder: (yargs) => withJson(yargs),
   handler: async (args) => {
     const result = await Daemon.stop()
@@ -89,13 +89,13 @@ const StopCommand = cmd({
       print(result, true)
       return
     }
-    console.log(result.stopped ? "kilo daemon stopped" : "kilo daemon not running")
+    console.log(result.stopped ? "Resoft CodingAgent daemon stopped" : "Resoft CodingAgent daemon not running")
   },
 })
 
 const RestartCommand = cmd({
   command: "restart",
-  describe: "restart the local kilo daemon",
+  describe: "restart the local Resoft CodingAgent daemon",
   builder: (yargs) => withJson(withNetworkOptions(yargs)),
   handler: async (args) => {
     const opts = await AppRuntime.runPromise(resolveNetworkOptions(args))
@@ -104,14 +104,14 @@ const RestartCommand = cmd({
       print(result, true)
       return
     }
-    console.log("kilo daemon restarted")
+    console.log("Resoft CodingAgent daemon restarted")
     print(result)
   },
 })
 
 export const DaemonCommand = cmd({
   command: "daemon",
-  describe: "manage the local kilo daemon",
+  describe: "manage the local Resoft CodingAgent daemon",
   builder: (yargs: Argv) =>
     yargs.command(StartCommand).command(StatusCommand).command(StopCommand).command(RestartCommand).demandCommand(),
   handler: async () => {},

@@ -1,5 +1,6 @@
 import { Schema } from "effect"
 import { HttpApi, HttpApiEndpoint, HttpApiError, HttpApiGroup, OpenApi } from "effect/unstable/httpapi"
+import { Brand } from "@/kilocode/brand"
 import { QuestionID } from "@/question/schema"
 import { SessionNetwork } from "@/session/network"
 import { Authorization } from "@/server/routes/instance/httpapi/middleware/authorization"
@@ -60,7 +61,7 @@ export const NetworkApi = HttpApi.make("network")
       .annotateMerge(
         OpenApi.annotations({
           title: "network",
-          description: "Kilo network routes.",
+          description: `${Brand.product} network routes.`,
         }),
       )
       .middleware(InstanceContextMiddleware)
@@ -69,8 +70,8 @@ export const NetworkApi = HttpApi.make("network")
   )
   .annotateMerge(
     OpenApi.annotations({
-      title: "kilo HttpApi",
+      title: `${Brand.product} HttpApi`,
       version: "0.0.1",
-      description: "Kilo HttpApi surface.",
+      description: `${Brand.product} HttpApi surface.`,
     }),
   )

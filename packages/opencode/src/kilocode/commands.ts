@@ -28,6 +28,7 @@ import { RollCallCommand } from "./cli/cmd/roll-call"
 import { ProfileCommand } from "./cli/cmd/profile"
 import { DaemonCommand } from "./cli/cmd/daemon"
 import { KiloConsoleCommand } from "./cli/cmd/console"
+import { ResoftCommand, ResoftStartCommand } from "./cli/cmd/resoft"
 import { HelpCommand } from "./help-command"
 import { InstallationBuildKind } from "@opencode-ai/core/installation/version"
 
@@ -69,6 +70,8 @@ export const commands = [
   RemoteCommand,
   DaemonCommand,
   KiloConsoleCommand,
+  ResoftStartCommand,
+  ResoftCommand,
   DbCommand,
   ConfigCLICommand,
   ...dev,

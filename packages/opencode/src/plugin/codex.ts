@@ -162,7 +162,7 @@ const HTML_SUCCESS = `<!doctype html>
 <html>
   <head>
     <!-- kilocode_change start -->
-    <title>Kilo - Codex Authorization Successful</title>
+    <title>Resoft CLI - Codex Authorization Successful</title>
     <!-- kilocode_change end -->
     <style>
       body {
@@ -195,7 +195,7 @@ const HTML_SUCCESS = `<!doctype html>
     <div class="container">
       <h1>Authorization Successful</h1>
       <!-- kilocode_change start -->
-      <p>You can close this window and return to Kilo.</p>
+      <p>You can close this window and return to Resoft CLI.</p>
       <!-- kilocode_change end -->
     </div>
     <script>
@@ -208,7 +208,7 @@ const HTML_ERROR = (error: string) => `<!doctype html>
 <html>
   <head>
     <!-- kilocode_change start -->
-    <title>Kilo - Codex Authorization Failed</title>
+    <title>Resoft CLI - Codex Authorization Failed</title>
     <!-- kilocode_change end -->
     <style>
       body {

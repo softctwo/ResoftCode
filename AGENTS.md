@@ -201,3 +201,71 @@ When editing shared upstream files, mark Kilo-specific lines with `kilocode_chan
 Markers are NOT needed in paths that contain `kilocode` in the name (e.g. `packages/opencode/src/kilocode/`, `packages/opencode/test/kilocode/`) — these are entirely Kilo Code additions and won't conflict with upstream.
 
 For decision rules on when to keep changes inline vs. extract Kilo logic, marker placement guidance, and verification commands, load `.kilo/skills/kilocode-merge-minimizer/SKILL.md`.
+
+
+<claude-mem-context>
+# Memory Context
+
+# [ResoftCode] recent context, 2026-06-04 1:36pm GMT+8
+
+Legend: 🎯session 🔴bugfix 🟣feature 🔄refactor ✅change 🔵discovery ⚖️decision 🚨security_alert 🔐security_note
+Format: ID TIME TYPE TITLE
+Fetch details: get_observations([IDs]) | Search: mem-search skill
+
+Stats: 50 obs (10,536t read) | 6,354,493t work | 100% savings
+
+### Jun 3, 2026
+S113 支持多模型 Provider 配置 (Jun 3 at 2:04 PM)
+252 2:07p ⚖️ Provider配置系统需支持多模型Provider
+253 2:10p 🟣 Resoft Starter 多模型 Provider 配置系统重构
+254 2:11p 🟣 Resoft Starter CLI 多模型 Provider 配置实现完成
+255 2:12p 🔵 Resoft Provider 配置测试全部通过
+256 " 🔵 Global.Path 配置路径基于 XDG 规范
+257 2:14p 🔵 配置系统使用 jsonc-parser 解析 kilo.jsonc
+258 " ⚖️ Provider 配置扩展计划：新增 5 个内置预设 + 用户自定义 Provider 支持
+259 " 🟣 starter.ts 扩展实现：7 个内置预设 + 自定义 Provider 加载机制
+260 " 🟣 扩展版 starter.ts 已写入项目：7 预设 + 自定义 Provider 加载
+261 2:19p 🔵 扩展版 starter.ts 测试通过，CLI UI 模块确认可用
+262 " 🟣 CLI 子命令 `kilo resoft providers` 实现完成
+263 2:20p 🔵 测试失败：KILO_CONFIG_DIR 环境变量变更不生效
+264 2:22p 🔴 修复 customProviderPaths 使用动态 Global.make().config 替代静态 Global.Path.config
+265 2:23p 🔵 `Global.make().config` 修复验证通过：23 个测试全部通过
+266 " 🔵 CLI providers 命令测试失败：UI.println 不经过 console.log
+267 " 🔵 UI.println 写入 process.stderr 而非 console.log
+268 2:24p 🟣 CLI 测试添加 captureStderr 辅助函数捕获 stderr 输出
+269 2:25p 🔵 全部 34 个 resoft 测试通过，计划进入最终验证阶段
+270 " 🔵 Typecheck 发现 1 个类型错误：resoft.test.ts 中 captureStderr 类型不匹配
+271 2:26p 🔴 修复 resoft.test.ts 类型错误：`process.exitCode` 可能为 string
+272 2:27p 🔵 typecheck 通过，packages/opencode 无 lint 脚本
+273 " 🔵 lint 验证通过：0 错误，5507 警告均为既有代码
+274 " 🟣 Provider 配置扩展完整交付：7 预设 + 自定义 Provider + CLI 子命令 + 34 测试
+275 " 🟣 Resoft Starter 多模型 Provider 配置系统
+276 2:28p 🔵 Resoft 相关测试全部通过
+277 " 🔵 kilocode 测试套件运行结果：1488 测试通过，DOCX 读取功能出现 2 个失败
+278 2:33p 🟣 Resoft Starter Provider系统扩展为7预设+自定义配置
+279 2:41p 🟣 Resoft Provider系统CLI验证通过，新增4个文件共1275行
+280 2:42p 🟣 resoft init --provider预设成功生成正确的kilo.jsonc配置
+282 " 🔵 ResoftCode构建系统调研：Bun.compile多平台二进制+changeset版本管理
+281 2:43p 🟣 自定义Provider配置文件resoft-providers.jsonc端到端验证通过
+283 3:03p 🔵 postinstall.mjs实现npm安装后的平台自适应二进制分发
+284 3:31p ✅ Resoft品牌化启动：brand.ts和package.json完成重命名
+285 3:32p ✅ publish.ts发布脚本完成resoft品牌适配
+286 3:33p ✅ publish.ts补充修补：repository URL和Homebrew tap安全禁用
+287 " ✅ postinstall.mjs实现新旧包名双轨兼容安装
+288 3:35p ✅ kilo-config.md技能文档新增npm Install安装章节
+289 4:00p ⚖️ 监管报送系统 CodingAgent 项目架构决策
+290 4:24p 🟣 Resoft 监管报送 V1 Starter 系统完整实现
+291 " 🔵 项目环境配置与 MCP 工具链现状
+292 4:25p 🟣 新增 `kilo resoft validate` 项目验证命令
+293 " 🟣 验证命令 CLI 层测试补齐，全量测试与类型检查通过
+295 " ⚖️ 监管报送 CodingAgent 项目架构决策（会话恢复）
+294 4:26p 🔵 end-to-end 手动验证：`kilo resoft init` + `validate` 完整链路跑通
+296 4:40p 🔵 品牌重构架构： centralized Brand 模块 + 双名兼容策略
+297 " 🔵 CLI 命令注册结构：yargs 链式注册 + commands.ts  barrel 文件同步
+298 4:42p 🟣 新增 `kilo resoft start` 一键启动命令，动态 CLI 名称检测
+299 4:43p 🟣 bin/resoft dev shim 增强 bun 路径自发现，e2e 验证 CLI 名称自适应
+300 " ⚖️ 品牌重命名边界决策：新命令用 Brand 模块，上游命令保留 "kilo" 描述
+301 4:44p 🟣 ResoftStartCommand 提取为独立导出并双路径注册，TUI 默认命令描述重命名
+
+Access 6354k tokens of past work via get_observations([IDs]) or mem-search skill.
+</claude-mem-context>

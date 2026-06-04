@@ -1,5 +1,6 @@
 import { Schema } from "effect"
 import { HttpApi, HttpApiEndpoint, HttpApiError, HttpApiGroup, OpenApi } from "effect/unstable/httpapi"
+import { Brand } from "@/kilocode/brand"
 import { Authorization } from "@/server/routes/instance/httpapi/middleware/authorization"
 import { InstanceContextMiddleware } from "@/server/routes/instance/httpapi/middleware/instance-context"
 import {
@@ -281,7 +282,7 @@ export const SessionImportApi = HttpApi.make("session-import")
       .annotateMerge(
         OpenApi.annotations({
           title: "session-import",
-          description: "Kilo legacy session import routes.",
+          description: `${Brand.product} legacy session import routes.`,
         }),
       )
       .middleware(InstanceContextMiddleware)
@@ -290,8 +291,8 @@ export const SessionImportApi = HttpApi.make("session-import")
   )
   .annotateMerge(
     OpenApi.annotations({
-      title: "kilo HttpApi",
+      title: `${Brand.product} HttpApi`,
       version: "0.0.1",
-      description: "Kilo HttpApi surface.",
+      description: `${Brand.product} HttpApi surface.`,
     }),
   )

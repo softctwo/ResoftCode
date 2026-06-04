@@ -23,6 +23,7 @@ import { isKiloError, showKiloErrorToast } from "@/kilocode/kilo-errors"
 import { registerKiloCommands } from "@/kilocode/kilo-commands"
 import { initializeTUIDependencies } from "@kilocode/kilo-gateway/tui"
 import { DialogProcessList } from "@/kilocode/cli/cmd/tui/component/dialog-process-list"
+import { Brand } from "@/kilocode/brand"
 
 // Re-export so upstream can render the route without importing directly
 export { KiloClawView } from "@/kilocode/claw/view"
@@ -36,13 +37,13 @@ export { useTuiConfigHotReload } from "@/kilocode/cli/cmd/tui/context/tui-config
 // ---------------------------------------------------------------------------
 
 /** Default terminal window title. */
-export const APP_TITLE = "Kilo CLI"
+export const APP_TITLE = Brand.cliTitle
 
 /** Public docs URL shown in the command palette. */
-export const DOCS_URL = "https://kilo.ai/docs"
+export const DOCS_URL = Brand.repository
 
 /** Human-readable product name used in user-facing messages. */
-export const APP_NAME = "Kilo"
+export const APP_NAME = Brand.product
 
 // ---------------------------------------------------------------------------
 // Utilities

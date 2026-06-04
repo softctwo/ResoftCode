@@ -1,4 +1,5 @@
 import { HttpApi, HttpApiEndpoint, HttpApiGroup, OpenApi } from "effect/unstable/httpapi"
+import { Brand } from "@/kilocode/brand"
 import { IndexingStatusInfo } from "@/kilocode/indexing-event"
 import { Authorization } from "@/server/routes/instance/httpapi/middleware/authorization"
 import { InstanceContextMiddleware } from "@/server/routes/instance/httpapi/middleware/instance-context"
@@ -34,7 +35,7 @@ export const IndexingApi = HttpApi.make("indexing")
       .annotateMerge(
         OpenApi.annotations({
           title: "indexing",
-          description: "Kilo indexing routes.",
+          description: `${Brand.product} indexing routes.`,
         }),
       )
       .middleware(InstanceContextMiddleware)
@@ -43,8 +44,8 @@ export const IndexingApi = HttpApi.make("indexing")
   )
   .annotateMerge(
     OpenApi.annotations({
-      title: "kilo HttpApi",
+      title: `${Brand.product} HttpApi`,
       version: "0.0.1",
-      description: "Kilo HttpApi surface.",
+      description: `${Brand.product} HttpApi surface.`,
     }),
   )

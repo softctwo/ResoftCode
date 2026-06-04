@@ -40,6 +40,8 @@ import { ProfileCommand } from "./kilocode/cli/cmd/profile" // kilocode_change
 import { DevSetupCommand, DevAliasCommand } from "./kilocode/cli/dev-setup" // kilocode_change
 import { DaemonCommand } from "./kilocode/cli/cmd/daemon" // kilocode_change
 import { KiloConsoleCommand } from "./kilocode/cli/cmd/console" // kilocode_change
+import { ResoftCommand, ResoftStartCommand } from "./kilocode/cli/cmd/resoft" // kilocode_change
+import { Brand } from "./kilocode/brand" // kilocode_change
 // kilocode_change start - Import telemetry, instance disposal, and legacy migration
 import { Telemetry } from "@kilocode/kilo-telemetry"
 import { InstanceRuntime } from "./project/instance-runtime" // kilocode_change
@@ -90,6 +92,14 @@ process.on("uncaughtException", (e) => {
 })
 
 const args = hideBin(process.argv)
+const script = (() => {
+  // kilocode_change start - show the canonical Resoft CLI name when launched through Resoft entrypoints
+  if (process.env.RESOFT_CLI === "1") return Brand.cli
+  const base = path.basename(process.execPath).toLowerCase()
+  if (base === "resoftcode" || base === "resoftcode.exe" || base === "resoft" || base === "resoft.exe") return Brand.cli
+  return "kilo"
+  // kilocode_change end
+})()
 
 function show(out: string) {
   const text = out.trimStart()
@@ -104,7 +114,7 @@ function show(out: string) {
 
 let cli = yargs(args) // kilocode_change
   .parserConfiguration({ "populate--": true })
-  .scriptName("kilo") // kilocode_change
+  .scriptName(script) // kilocode_change
   .wrap(100)
   .help("help", "show help")
   .alias("help", "h")
@@ -248,6 +258,8 @@ let cli = yargs(args) // kilocode_change
   .command(RemoteCommand) // kilocode_change
   .command(DaemonCommand) // kilocode_change
   .command(KiloConsoleCommand) // kilocode_change
+  .command(ResoftStartCommand) // kilocode_change
+  .command(ResoftCommand) // kilocode_change
   .command(ConfigCLICommand) // kilocode_change
   .command(PluginCommand)
   .command(DbCommand)

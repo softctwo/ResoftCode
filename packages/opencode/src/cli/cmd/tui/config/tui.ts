@@ -15,7 +15,7 @@ import { AppFileSystem } from "@opencode-ai/core/filesystem"
 import { CurrentWorkingDirectory } from "./cwd"
 import { ConfigPlugin } from "@/config/plugin"
 import { TuiKeybind } from "./keybind"
-import { InstallationLocal, InstallationVersion } from "@opencode-ai/core/installation/version"
+import { InstallationBuildKind, InstallationLocal, InstallationVersion } from "@opencode-ai/core/installation/version" // kilocode_change
 import { makeRuntime } from "@opencode-ai/core/effect/runtime"
 import { Filesystem } from "@/util/filesystem"
 import * as Log from "@opencode-ai/core/util/log"
@@ -244,7 +244,8 @@ export const layer = Layer.effect(
             add: [
               {
                 name: "@kilocode/plugin",
-                version: InstallationLocal ? undefined : InstallationVersion,
+                // kilocode_change - source/preview builds do not have matching plugin versions on npm
+                version: InstallationLocal || InstallationBuildKind !== "release" ? undefined : InstallationVersion,
               },
             ],
           })

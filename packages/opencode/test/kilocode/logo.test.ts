@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test"
+import { Brand } from "../../src/kilocode/brand"
 import { plain, session, supports, tui } from "../../src/kilocode/cli/logo"
 
 describe("kilocode logo", () => {
@@ -28,13 +29,16 @@ describe("kilocode logo", () => {
 
   test("uses modern and fallback logo variants", () => {
     expect(tui({ KILO_UNICODE_LOGO: "1" }, "linux").join("\n")).toContain("🬺🬏")
+    expect(tui({ KILO_UNICODE_LOGO: "1" }, "linux").join("\n")).toContain("██████")
     expect(tui({}, "win32").join("\n")).not.toContain("🬺🬏")
+    expect(tui({}, "win32").join("\n")).toContain("RESOFT")
     expect(plain({}, "win32").join("\n")).not.toContain("🬁🬬")
   })
 
   test("formats child session exit logo", () => {
     const out = session("Title", "ses_test", "<dim>", "<reset>", {}, "win32")
     expect(out).toContain("<dim>Title<reset>")
+    expect(out).toContain(`${Brand.product} session ses_test`)
     expect(out).not.toContain("🬺🬏")
   })
 })

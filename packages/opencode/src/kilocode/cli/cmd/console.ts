@@ -37,18 +37,18 @@ async function launch(url: string) {
 
 export const KiloConsoleCommand = cmd({
   command: "console",
-  describe: "open the local Kilo Console",
+  describe: "open the local Resoft CodingAgent Console",
   builder: (yargs) => withNetworkOptions(yargs),
   handler: async (args) => {
     const opts = await AppRuntime.runPromise(resolveNetworkOptions(args))
     const result = await Daemon.start(opts)
     const state = result.state
-    if (!state) throw new Error("Kilo daemon did not provide connection state")
+    if (!state) throw new Error("Resoft CodingAgent daemon did not provide connection state")
 
     const url = publicUrl(state)
     await launch(browserUrl(state)).catch((err) => {
       console.warn(`Could not open browser automatically: ${err instanceof Error ? err.message : String(err)}`)
     })
-    console.log(`Kilo Console: ${url}`)
+    console.log(`Resoft CodingAgent Console: ${url}`)
   },
 })

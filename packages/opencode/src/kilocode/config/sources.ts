@@ -134,7 +134,7 @@ export namespace KilocodeConfigSources {
 
   async function configDirSources(input: Input): Promise<Pending[]> {
     const project = await Filesystem.findUp([...roots], input.directory, input.worktree)
-    const home = await Filesystem.findUp([...roots], Global.Path.home, Global.Path.home)
+    const home = Flag.RESOFT_CLI ? [] : await Filesystem.findUp([...roots], Global.Path.home, Global.Path.home)
     const env = Flag.KILO_CONFIG_DIR ? [Flag.KILO_CONFIG_DIR] : []
     const dirs = unique([Global.Path.config, ...project, ...home, ...env]).filter((dir) =>
       KilocodeConfig.isConfigDir(dir, Flag.KILO_CONFIG_DIR),

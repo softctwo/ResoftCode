@@ -8,7 +8,7 @@ import { InstanceRuntime } from "../../project/instance-runtime" // kilocode_cha
 export const ServeCommand = effectCmd({
   command: "serve",
   builder: (yargs) => withNetworkOptions(yargs),
-  describe: "starts a headless kilo server",
+  describe: "starts a headless Resoft CodingAgent server", // kilocode_change
   // Server loads instances per-request via x-kilo-directory header — no
   // need for an ambient project InstanceContext at startup.
   instance: false, // kilocode_change
@@ -18,7 +18,7 @@ export const ServeCommand = effectCmd({
     }
     const opts = yield* resolveNetworkOptions(args)
     const server = yield* Effect.promise(() => Server.listen(opts))
-    console.log(`kilo server listening on http://${server.hostname}:${server.port}`) // kilocode_change
+    console.log(`Resoft CodingAgent server listening on http://${server.hostname}:${server.port}`) // kilocode_change
 
     // kilocode_change start - graceful signal shutdown
     // yield* Effect.never

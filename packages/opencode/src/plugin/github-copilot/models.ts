@@ -16,29 +16,37 @@ export const schema = z.object({
         })
         .optional(),
       capabilities: z.object({
-        family: z.string(),
-        limits: z.object({
-          max_context_window_tokens: z.number(),
-          max_output_tokens: z.number(),
-          max_prompt_tokens: z.number(),
-          vision: z
-            .object({
-              max_prompt_image_size: z.number(),
-              max_prompt_images: z.number(),
-              supported_media_types: z.array(z.string()),
-            })
-            .optional(),
-        }),
-        supports: z.object({
-          adaptive_thinking: z.boolean().optional(),
-          max_thinking_budget: z.number().optional(),
-          min_thinking_budget: z.number().optional(),
-          reasoning_effort: z.array(z.string()).optional(),
-          streaming: z.boolean(),
-          structured_outputs: z.boolean().optional(),
-          tool_calls: z.boolean(),
-          vision: z.boolean().optional(),
-        }),
+        family: z.string().optional(),
+        // kilocode_change start - Copilot may return experimental entries with partial capabilities
+        limits: z
+          .object({
+            max_context_window_tokens: z.number().optional(),
+            max_output_tokens: z.number().optional(),
+            max_prompt_tokens: z.number().optional(),
+            vision: z
+              .object({
+                max_prompt_image_size: z.number(),
+                max_prompt_images: z.number(),
+                supported_media_types: z.array(z.string()),
+              })
+              .optional(),
+          })
+          .optional()
+          .default({}),
+        supports: z
+          .object({
+            adaptive_thinking: z.boolean().optional(),
+            max_thinking_budget: z.number().optional(),
+            min_thinking_budget: z.number().optional(),
+            reasoning_effort: z.array(z.string()).optional(),
+            streaming: z.boolean().optional(),
+            structured_outputs: z.boolean().optional(),
+            tool_calls: z.boolean().optional(),
+            vision: z.boolean().optional(),
+          })
+          .optional()
+          .default({}),
+        // kilocode_change end
       }),
     }),
   ),
@@ -69,15 +77,15 @@ function build(key: string, remote: Item, url: string, prev?: Model): Model {
     // API response wins
     status: "active",
     limit: {
-      context: remote.capabilities.limits.max_context_window_tokens,
-      input: remote.capabilities.limits.max_prompt_tokens,
-      output: remote.capabilities.limits.max_output_tokens,
+      context: remote.capabilities.limits.max_context_window_tokens!,
+      input: remote.capabilities.limits.max_prompt_tokens!,
+      output: remote.capabilities.limits.max_output_tokens!,
     },
     capabilities: {
       temperature: prev?.capabilities.temperature ?? true,
       reasoning: prev?.capabilities.reasoning ?? reasoning,
       attachment: prev?.capabilities.attachment ?? true,
-      toolcall: remote.capabilities.supports.tool_calls,
+      toolcall: remote.capabilities.supports.tool_calls ?? false,
       input: {
         text: true,
         audio: false,
@@ -95,7 +103,7 @@ function build(key: string, remote: Item, url: string, prev?: Model): Model {
       interleaved: false,
     },
     // existing wins
-    family: prev?.family ?? remote.capabilities.family,
+    family: prev?.family ?? remote.capabilities.family ?? remote.id,
     name: prev?.name ?? remote.name,
     cost: {
       input: 0,
@@ -173,9 +181,17 @@ export async function get(
   })
 
   const result = { ...existing }
+  // kilocode_change start - ignore partial experimental entries instead of failing the entire model catalog
+  const usable = (model: Item) =>
+    model.capabilities.limits.max_context_window_tokens !== undefined &&
+    model.capabilities.limits.max_output_tokens !== undefined &&
+    model.capabilities.limits.max_prompt_tokens !== undefined
   const remote = new Map(
-    data.data.filter((m) => m.model_picker_enabled && m.policy?.state !== "disabled").map((m) => [m.id, m] as const),
+    data.data
+      .filter((m) => m.model_picker_enabled && m.policy?.state !== "disabled" && usable(m))
+      .map((m) => [m.id, m] as const),
   )
+  // kilocode_change end
 
   // prune existing models whose api.id isn't in the endpoint response
   for (const [key, model] of Object.entries(result)) {

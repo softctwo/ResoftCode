@@ -35,7 +35,8 @@ it.instance(
       expect(item).toBeDefined()
       expect(item!.name).toBe("kilo-config")
       expect(item!.location).toBe(Skill.BUILTIN_LOCATION)
-      expect(item!.content).toContain("kilo")
+      expect(item!.description).toContain("Resoft CodingAgent")
+      expect(item!.content).toContain("Resoft CodingAgent")
     }),
   { git: true },
 )

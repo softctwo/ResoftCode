@@ -12,7 +12,7 @@ import { Auth } from "../auth"
 import { Env } from "../env"
 import { applyEdits, findNodeAtLocation, modify, parseTree } from "jsonc-parser" // kilocode_change - parseTree/findNodeAtLocation used in patchJsonc
 import { type InstanceContext } from "../project/instance"
-import { InstallationLocal, InstallationVersion } from "@opencode-ai/core/installation/version"
+import { InstallationBuildKind, InstallationLocal, InstallationVersion } from "@opencode-ai/core/installation/version" // kilocode_change
 import { existsSync } from "fs"
 // kilocode_change start
 import { GlobalBus } from "@/bus/global"
@@ -822,7 +822,8 @@ export const layer = Layer.effect(
               add: [
                 {
                   name: "@kilocode/plugin",
-                  version: InstallationLocal ? undefined : InstallationVersion,
+                  // kilocode_change - source/preview builds do not have matching plugin versions on npm
+                  version: InstallationLocal || InstallationBuildKind !== "release" ? undefined : InstallationVersion,
                 },
               ],
             })

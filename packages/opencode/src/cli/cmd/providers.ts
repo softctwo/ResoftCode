@@ -247,8 +247,7 @@ export const ProvidersListCommand = effectCmd({
   command: "list",
   aliases: ["ls"],
   describe: "list providers and credentials",
-  // Lists global credentials + provider env vars; no project instance needed.
-  instance: false,
+  // kilocode_change - ModelsDev.get reads the effective config and therefore needs an instance
   handler: Effect.fn("Cli.providers.list")(function* (_args) {
     const authSvc = yield* Auth.Service
     const modelsDev = yield* ModelsDev.Service
@@ -496,8 +495,7 @@ export const ProvidersLoginCommand = effectCmd({
 export const ProvidersLogoutCommand = effectCmd({
   command: "logout",
   describe: "log out from a configured provider",
-  // Removes a global auth credential; no project instance needed.
-  instance: false,
+  // kilocode_change - provider selection reads ModelsDev.get and therefore needs an instance
   handler: Effect.fn("Cli.providers.logout")(function* (_args) {
     const authSvc = yield* Auth.Service
     const modelsDev = yield* ModelsDev.Service

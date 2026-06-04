@@ -22,6 +22,14 @@ export const files = Effect.fn("ConfigPaths.projectFiles")(function* (
 
 export const directories = Effect.fn("ConfigPaths.directories")(function* (directory: string, worktree?: string) {
   const afs = yield* AppFileSystem.Service
+  // kilocode_change - Resoft uses ~/.resoft and must not inherit Kilo/OpenCode home config
+  const home = Flag.RESOFT_CLI
+    ? []
+    : yield* afs.up({
+        targets: [".kilocode", ".kilo", ".opencode"],
+        start: Global.Path.home,
+        stop: Global.Path.home,
+      })
   return unique([
     Global.Path.config,
     ...(!Flag.KILO_DISABLE_PROJECT_CONFIG
@@ -31,11 +39,7 @@ export const directories = Effect.fn("ConfigPaths.directories")(function* (direc
           stop: worktree,
         })
       : []),
-    ...(yield* afs.up({
-      targets: [".kilocode", ".kilo", ".opencode"], // kilocode_change
-      start: Global.Path.home,
-      stop: Global.Path.home,
-    })),
+    ...home,
     ...(Flag.KILO_CONFIG_DIR ? [Flag.KILO_CONFIG_DIR] : []),
   ])
 })

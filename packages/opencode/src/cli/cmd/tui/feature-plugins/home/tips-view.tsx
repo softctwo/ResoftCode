@@ -118,7 +118,7 @@ const TIPS = [
   "Use {highlight}kilo --continue{/highlight} to resume the last session", // kilocode_change
   "Use {highlight}kilo run -f file.ts{/highlight} to attach files via CLI", // kilocode_change
   "Use {highlight}--format json{/highlight} for machine-readable output in scripts",
-  "Run {highlight}kilo serve{/highlight} for headless API access to Kilo", // kilocode_change
+  "Run {highlight}resoftcode serve{/highlight} for headless API access to Resoft CodingAgent", // resoft_change
   "Use {highlight}kilo run --attach{/highlight} to connect to a running server", // kilocode_change
   "Run {highlight}kilo upgrade{/highlight} to update to the latest version", // kilocode_change
   "Run {highlight}kilo auth list{/highlight} to see all configured providers", // kilocode_change

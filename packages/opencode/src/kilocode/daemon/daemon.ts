@@ -325,7 +325,7 @@ export namespace Daemon {
       if (code(err) === "ENOENT") return ""
       throw err
     })
-    const match = text.match(/kilo server listening on http:\/\/([^:\s]+):(\d+)/)
+    const match = text.match(/(?:kilo|Resoft CodingAgent) server listening on http:\/\/([^:\s]+):(\d+)/)
     if (!match) return undefined
     return { hostname: match[1], port: Number(match[2]) }
   }

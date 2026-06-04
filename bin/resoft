@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# Dev-mode shim for the `resoft` command. Forwards to the opencode entry
+# the same way `bin/kilodev` does, just under the new canonical name.
+# In installed npm builds, the published binary is named `resoft` directly.
+set -e
+dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+export KILO_DEV_REPO="$dir"
+export RESOFT_CLI=1
+bun_bin="${BUN_BIN:-}"
+if [[ -z "$bun_bin" ]]; then
+  bun_bin="$(command -v bun || true)"
+fi
+if [[ -z "$bun_bin" && -x "$HOME/.bun/bin/bun" ]]; then
+  bun_bin="$HOME/.bun/bin/bun"
+fi
+if [[ -z "$bun_bin" ]]; then
+  echo "resoft: bun not found; set BUN_BIN or install Bun" >&2
+  exit 127
+fi
+first=
+for a in "$@"; do
+  case "$a" in
+    --) break ;;
+    -*) ;;
+    *) first="$a"; break ;;
+  esac
+done
+if [[ -z "$first" ]]; then
+  exec "$bun_bin" run --cwd "$dir/packages/opencode" --conditions=browser src/index.ts --project "$PWD" "$@"
+fi
+exec "$bun_bin" run --cwd "$dir/packages/opencode" --conditions=browser src/index.ts "$@"

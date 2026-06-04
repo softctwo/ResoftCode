@@ -76,7 +76,12 @@ function isMusl() {
 
 function getPackageNames() {
   const { platform, arch } = detectPlatformAndArch()
-  const base = `@kilocode/cli-${platform}-${arch}`
+  // resoft_change start - canonical China Resoft scope with legacy fallbacks
+  const base = `@chinaresoft/resoftcode-${platform}-${arch}`
+  const scopeBase = `@chinaresoft/cli-${platform}-${arch}`
+  const priorBase = `@resoft/cli-${platform}-${arch}`
+  const legacyBase = `@kilocode/cli-${platform}-${arch}`
+  // resoft_change end
   const avx2 = supportsAvx2()
   const baseline = arch === "x64" && !avx2
 
@@ -84,28 +89,32 @@ function getPackageNames() {
     const musl = isMusl()
     if (musl) {
       if (arch === "x64") {
-        if (baseline) return [`${base}-baseline-musl`, `${base}-musl`, `${base}-baseline`, base]
-        return [`${base}-musl`, `${base}-baseline-musl`, base, `${base}-baseline`]
+        if (baseline) return [`${base}-baseline-musl`, `${base}-musl`, `${base}-baseline`, base, `${scopeBase}-baseline-musl`, `${scopeBase}-musl`, `${scopeBase}-baseline`, scopeBase, `${priorBase}-baseline-musl`, `${priorBase}-musl`, `${priorBase}-baseline`, priorBase, `${legacyBase}-baseline-musl`, `${legacyBase}-musl`, `${legacyBase}-baseline`, legacyBase]
+        return [`${base}-musl`, `${base}-baseline-musl`, base, `${base}-baseline`, `${scopeBase}-musl`, `${scopeBase}-baseline-musl`, scopeBase, `${scopeBase}-baseline`, `${priorBase}-musl`, `${priorBase}-baseline-musl`, priorBase, `${priorBase}-baseline`, `${legacyBase}-musl`, `${legacyBase}-baseline-musl`, legacyBase, `${legacyBase}-baseline`]
       }
-      return [`${base}-musl`, base]
+      return [`${base}-musl`, base, `${scopeBase}-musl`, scopeBase, `${priorBase}-musl`, priorBase, `${legacyBase}-musl`, legacyBase]
     }
     if (arch === "x64") {
-      if (baseline) return [`${base}-baseline`, base, `${base}-baseline-musl`, `${base}-musl`]
-      return [base, `${base}-baseline`, `${base}-musl`, `${base}-baseline-musl`]
+      if (baseline) return [`${base}-baseline`, base, `${base}-baseline-musl`, `${base}-musl`, `${scopeBase}-baseline`, scopeBase, `${scopeBase}-baseline-musl`, `${scopeBase}-musl`, `${priorBase}-baseline`, priorBase, `${priorBase}-baseline-musl`, `${priorBase}-musl`, `${legacyBase}-baseline`, legacyBase, `${legacyBase}-baseline-musl`, `${legacyBase}-musl`]
+      return [base, `${base}-baseline`, `${base}-musl`, `${base}-baseline-musl`, scopeBase, `${scopeBase}-baseline`, `${scopeBase}-musl`, `${scopeBase}-baseline-musl`, priorBase, `${priorBase}-baseline`, `${priorBase}-musl`, `${priorBase}-baseline-musl`, legacyBase, `${legacyBase}-baseline`, `${legacyBase}-musl`, `${legacyBase}-baseline-musl`]
     }
-    return [base, `${base}-musl`]
+    return [base, `${base}-musl`, scopeBase, `${scopeBase}-musl`, priorBase, `${priorBase}-musl`, legacyBase, `${legacyBase}-musl`]
   }
 
   if (arch === "x64") {
-    if (baseline) return [`${base}-baseline`, base]
-    return [base, `${base}-baseline`]
+    if (baseline) return [`${base}-baseline`, base, `${scopeBase}-baseline`, scopeBase, `${priorBase}-baseline`, priorBase, `${legacyBase}-baseline`, legacyBase]
+    return [base, `${base}-baseline`, scopeBase, `${scopeBase}-baseline`, priorBase, `${priorBase}-baseline`, legacyBase, `${legacyBase}-baseline`]
   }
-  return [base]
+  return [base, scopeBase, priorBase, legacyBase]
 }
 
 function findBinary() {
   const { platform } = detectPlatformAndArch()
-  const binaryName = platform === "windows" ? "kilo.exe" : "kilo"
+  // resoft_change start - prefer resoftcode binary, fall back to prior names
+  const binaryName = platform === "windows" ? "resoftcode.exe" : "resoftcode"
+  const scopeBinaryName = platform === "windows" ? "resoft.exe" : "resoft"
+  const legacyBinaryName = platform === "windows" ? "kilo.exe" : "kilo"
+  // resoft_change end
   const names = getPackageNames()
 
   for (const packageName of names) {
@@ -117,6 +126,16 @@ function findBinary() {
       if (fs.existsSync(binaryPath)) {
         return { binaryPath, binaryName }
       }
+      const scopePath = path.join(packageDir, "bin", scopeBinaryName)
+      if (fs.existsSync(scopePath)) {
+        return { binaryPath: scopePath, binaryName: scopeBinaryName }
+      }
+      // resoft_change start - try the legacy binary name in the same package
+      const legacyPath = path.join(packageDir, "bin", legacyBinaryName)
+      if (fs.existsSync(legacyPath)) {
+        return { binaryPath: legacyPath, binaryName: legacyBinaryName }
+      }
+      // resoft_change end
     } catch {
       // package not installed, try next variant
     }
@@ -157,22 +176,32 @@ function main() {
     return
   }
 
-  const { binaryPath } = findBinary()
-  const target = path.join(__dirname, "bin", ".kilo") // kilocode_change
-  if (fs.existsSync(target)) fs.unlinkSync(target)
-  try {
-    fs.linkSync(binaryPath, target)
-  } catch {
-    fs.copyFileSync(binaryPath, target)
+  const { binaryPath, binaryName } = findBinary()
+  // resoft_change start - publish to both .resoft (canonical) and .kilo (legacy alias)
+  const targets = [
+    path.join(__dirname, "bin", ".resoft"),
+    path.join(__dirname, "bin", ".kilo"),
+  ]
+  for (const target of targets) {
+    if (fs.existsSync(target)) fs.unlinkSync(target)
+    try {
+      fs.linkSync(binaryPath, target)
+    } catch {
+      fs.copyFileSync(binaryPath, target)
+    }
+    fs.chmodSync(target, 0o755)
   }
   copyTreeSitterResources(binaryPath) // kilocode_change
   copyConsoleResources(binaryPath) // kilocode_change
   fs.chmodSync(target, 0o755)
+||||||| parent of 81c9a4d0b8 (feat: ship Resoft CodingAgent V1 CLI as @chinaresoft/resoftcode)
+  fs.chmodSync(target, 0o755)
+  // resoft_change end
 }
 
 try {
   void main()
 } catch (error) {
-  console.error("Failed to setup kilo binary:", error.message)
+  console.error("Failed to setup resoft binary:", error.message)
   process.exit(1)
 }

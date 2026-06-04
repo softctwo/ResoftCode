@@ -8,7 +8,7 @@ describe("Kilo OAuth branding", () => {
     const src = await Bun.file(path.join(root, "src", "plugin", "codex.ts")).text()
 
     expect(src).toContain('originator: "kilo"')
-    expect(src).toContain("return to Kilo")
+    expect(src).toContain("return to Resoft CLI")
     expect(src).not.toContain('originator: "opencode"')
     expect(src).not.toContain("return to OpenCode")
   })
@@ -16,7 +16,7 @@ describe("Kilo OAuth branding", () => {
   test("MCP OAuth callback page uses Kilo branding", async () => {
     const src = await Bun.file(path.join(root, "src", "mcp", "oauth-callback.ts")).text()
 
-    expect(src).toContain("return to Kilo")
+    expect(src).toContain("return to Resoft CLI")
     expect(src).not.toContain("return to OpenCode")
   })
 })

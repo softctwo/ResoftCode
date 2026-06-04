@@ -18,16 +18,20 @@ const app = "kilo" // kilocode_change
 // which breaks every `kilo` invocation at startup (including the SDK
 // regen that runs during `bun run extension`).
 const clean = (p: string | undefined) => p?.replace(/[\r\n]+/g, "")
+const home = (process.env.KILO_TEST_HOME ?? os.homedir()).trim()
+const resoft =
+  process.env.RESOFT_CLI === "1" ||
+  ["resoftcode", "resoftcode.exe", "resoft", "resoft.exe"].includes(path.basename(process.execPath).toLowerCase())
 const data = path.join(clean(xdgData)!, app)
 const cache = path.join(clean(xdgCache)!, app)
-const config = path.join(clean(xdgConfig)!, app)
+const config = process.env.RESOFT_CONFIG_DIR ?? (resoft ? path.join(home, ".resoft") : path.join(clean(xdgConfig)!, app))
 const state = path.join(clean(xdgState)!, app)
 // kilocode_change end
 const tmp = path.join(os.tmpdir(), app)
 
 const paths = {
   get home() {
-    return (process.env.KILO_TEST_HOME ?? os.homedir()).trim() // kilocode_change — defensive trim, see above
+    return home // kilocode_change — defensive trim, see above
   },
   data,
   bin: path.join(cache, "bin"),
@@ -76,7 +80,7 @@ export function make(input: Partial<Interface> = {}): Interface {
     home: Path.home,
     data: Path.data,
     cache: Path.cache,
-    config: Flag.KILO_CONFIG_DIR ?? Path.config,
+    config: Flag.RESOFT_CONFIG_DIR ?? Flag.KILO_CONFIG_DIR ?? Path.config, // resoft_change
     state: Path.state,
     tmp: Path.tmp,
     bin: Path.bin,

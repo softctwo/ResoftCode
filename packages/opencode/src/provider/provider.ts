@@ -439,9 +439,9 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
         autoload: false,
         options: {
           headers: {
-            "HTTP-Referer": "https://kilo.ai/", // kilocode_change
-            "X-Title": "Kilo Code", // kilocode_change
-            "X-Source": "kilo", // kilocode_change
+            "HTTP-Referer": "https://github.com/softctwo/Resoftcode", // resoft_change
+            "X-Title": "Resoft CLI", // resoft_change
+            "X-Source": "resoftcode", // resoft_change
           },
         },
       }),
@@ -450,8 +450,8 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
         autoload: false,
         options: {
           headers: {
-            "HTTP-Referer": "https://kilo.ai/", // kilocode_change
-            "X-Title": "Kilo Code", // kilocode_change
+            "HTTP-Referer": "https://github.com/softctwo/Resoftcode", // resoft_change
+            "X-Title": "Resoft CLI", // resoft_change
           },
         },
       }),
@@ -460,9 +460,9 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
         autoload: false,
         options: {
           headers: {
-            "HTTP-Referer": "https://kilo.ai/", // kilocode_change
-            "X-Title": "Kilo Code", // kilocode_change
-            "X-BILLING-INVOKE-ORIGIN": "KiloCode", // kilocode_change
+            "HTTP-Referer": "https://github.com/softctwo/Resoftcode", // resoft_change
+            "X-Title": "Resoft CLI", // resoft_change
+            "X-BILLING-INVOKE-ORIGIN": "ResoftCode", // resoft_change
           },
         },
       }),
@@ -471,8 +471,8 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
         autoload: false,
         options: {
           headers: {
-            "http-referer": "https://kilo.ai/", // kilocode_change
-            "x-title": "Kilo Code", // kilocode_change
+            "http-referer": "https://github.com/softctwo/Resoftcode", // resoft_change
+            "x-title": "Resoft CLI", // resoft_change
           },
         },
       }),
@@ -570,7 +570,7 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
         options: {
           headers: {
             "HTTP-Referer": "https://kilo.ai/", // kilocode_change
-            "X-Title": "Kilo Code", // kilocode_change
+            "X-Title": "Resoft CLI", // resoft_change
           },
         },
       }),
@@ -845,7 +845,7 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
         autoload: false,
         options: {
           headers: {
-            "X-Cerebras-3rd-Party-Integration": "Kilo Code", // kilocode_change
+            "X-Cerebras-3rd-Party-Integration": "Resoft CLI", // resoft_change
           },
         },
       }),
@@ -854,8 +854,8 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
         autoload: false,
         options: {
           headers: {
-            "HTTP-Referer": "https://kilo.ai/", // kilocode_change
-            "X-Title": "Kilo Code", // kilocode_change
+            "HTTP-Referer": "https://github.com/softctwo/Resoftcode", // resoft_change
+            "X-Title": "Resoft CLI", // resoft_change
           },
         },
       }),
@@ -1370,7 +1370,8 @@ const layer: Layer.Layer<
           if (disabled.has(providerID)) continue
           const data = database[providerID]
           if (!data) {
-            log.error("Provider does not exist in model list " + providerID)
+            // kilocode_change - optional Kilo loaders may not exist in every model catalog
+            log.debug("Provider does not exist in model list " + providerID)
             continue
           }
           const result = yield* fn(data)

@@ -7,8 +7,12 @@
 - <https://api.apertis.ai/v1>
   <!-- packages/opencode/src/provider/model-cache.ts -->
   <!-- packages/opencode/src/provider/models.ts -->
+- <https://api.deepseek.com/v1>
+  <!-- packages/opencode/src/kilocode/resoft/starter.ts -->
 - <https://api.kilo.ai>
   <!-- packages/opencode/src/cli/cmd/github.ts -->
+- <https://api.moonshot.cn/v1>
+  <!-- packages/opencode/src/kilocode/resoft/starter.ts -->
 - <https://api.x.ai/v1>
   <!-- packages/opencode/src/plugin/xai.ts -->
 - <https://app.kilo.ai>
@@ -21,6 +25,7 @@
 - <https://app.kilo.ai/config.json>
   <!-- packages/kilo-vscode/src/kilo-provider/config-file.ts -->
   <!-- packages/opencode/src/config/config.ts -->
+  <!-- packages/opencode/src/kilocode/resoft/starter.ts -->
 - <https://app.kilo.ai/credits>
   <!-- packages/kilo-vscode/src/services/autocomplete/AutocompleteServiceManager.ts -->
 - <https://app.kilo.ai/profile>
@@ -47,6 +52,8 @@
   <!-- packages/opencode/src/session/network.ts -->
 - <https://cookbook.openai.com/examples/using_logprobs>
   <!-- packages/opencode/src/provider/sdk/copilot/responses/openai-responses-language-model.ts -->
+- <https://dashscope.aliyuncs.com/compatible-mode/v1>
+  <!-- packages/opencode/src/kilocode/resoft/starter.ts -->
 - <https://docs.github.com/en/actions/how-tos/security-for-github-actions/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services>
   <!-- packages/opencode/src/cli/cmd/github.ts -->
 - <https://docs.inceptionlabs.ai/capabilities/next-edit>
@@ -81,15 +88,21 @@
   <!-- packages/opencode/src/kilocode/encoding.ts -->
 - <https://github.com/Kilo-Org/kilocode/issues/9755>
   <!-- packages/opencode/src/kilocode/encoding.ts -->
-- <https://github.com/Kilo-Org/kilocode/issues/new?template=bug-report.yml>
-  <!-- packages/opencode/src/cli/cmd/tui/app.tsx -->
-  <!-- packages/opencode/src/cli/cmd/tui/component/error-component.tsx -->
 - <https://github.com/Kilo-Org/kilocode/issues/new/choose>
   <!-- packages/kilo-vscode/webview-ui/src/components/chat/FeedbackDialog.tsx -->
 - <https://github.com/microsoft/vscode-eslint/archive/refs/heads/main.zip>
   <!-- packages/opencode/src/lsp/server.ts -->
 - <https://github.com/oven-sh/bun/issues/16682>
   <!-- packages/opencode/src/provider/provider.ts -->
+- <https://github.com/softctwo/Resoftcode>
+  <!-- packages/opencode/src/kilocode/brand.ts -->
+  <!-- packages/opencode/src/kilocode/const.ts -->
+  <!-- packages/opencode/src/provider/provider.ts -->
+- <https://github.com/softctwo/Resoftcode/issues>
+  <!-- packages/opencode/src/kilocode/brand.ts -->
+- <https://github.com/softctwo/Resoftcode/issues/new>
+  <!-- packages/opencode/src/cli/cmd/tui/app.tsx -->
+  <!-- packages/opencode/src/cli/cmd/tui/component/error-component.tsx -->
 - <https://github.com/vercel/ai/blob/2dc67e0ef538307f21368db32d5a12345d98831b/packages/ai/src/logger/log-warnings.ts#L85>
   <!-- packages/opencode/src/server/server.ts -->
 - <https://gitlab.com>
@@ -109,7 +122,6 @@
   <!-- packages/kilo-vscode/webview-ui/src/components/settings/AboutKiloCodeTab.tsx -->
 - <https://kilo.ai/docs>
   <!-- packages/kilo-vscode/webview-ui/src/hooks/useSlashCommand.ts -->
-  <!-- packages/opencode/src/kilocode/cli/cmd/tui/app.tsx -->
 - <https://kilo.ai/docs/ai-providers#custom-provider>
   <!-- packages/kilo-vscode/webview-ui/src/components/settings/CustomProviderDialog.tsx -->
 - <https://kilo.ai/docs/code-with-ai/platforms/vscode/whats-new>
@@ -124,12 +136,12 @@
 - <https://kilo.ai/support>
   <!-- packages/kilo-vscode/webview-ui/src/components/chat/FeedbackDialog.tsx -->
   <!-- packages/kilo-vscode/webview-ui/src/components/settings/AboutKiloCodeTab.tsx -->
-- <https://kilocode.ai>
-  <!-- packages/opencode/src/kilocode/const.ts -->
 - <https://models.dev>
   <!-- packages/opencode/src/provider/models.ts -->
 - <https://models.dev/model-schema.json#/$defs/Model>
   <!-- packages/opencode/src/config/model-id.ts -->
+- <https://open.bigmodel.cn/api/paas/v4>
+  <!-- packages/opencode/src/kilocode/resoft/starter.ts -->
 - <https://opencode.ai/>
   <!-- packages/opencode/src/cli/cmd/generate.ts -->
   <!-- packages/opencode/src/kilocode/server/httpapi/public.ts -->

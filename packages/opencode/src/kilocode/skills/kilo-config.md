@@ -1,8 +1,40 @@
-# Kilo CLI Configuration Reference
+# Resoft CodingAgent CLI Configuration Reference
 
-All config lives in `kilo.json` (or `kilo.jsonc`). Precedence low-to-high: remote well-known, global (`~/.config/kilo/kilo.json`), env `KILO_CONFIG`, project `./kilo.json`, `.kilo/kilo.json`, `KILO_CONFIG_CONTENT`, managed (see Config File Locations). Deep-merged; later wins.
+Resoft CodingAgent is built on the Kilo/OpenCode runtime, so the compatibility config filenames remain `kilo.json` (or `kilo.jsonc`). Precedence low-to-high: remote well-known, global (`~/.config/kilo/kilo.json`), env `KILO_CONFIG`, project `./kilo.json`, `.kilo/kilo.json`, `KILO_CONFIG_CONTENT`, managed (see Config File Locations). Deep-merged; later wins.
 
-This also covers where Kilo looks for config files, commands, agents, and skills across project, global, and legacy paths such as `.kilo/`, `.kilocode/`, `.opencode/`, and `~/.config/kilo/`, plus Agent Manager setup/run scripts in the VS Code extension.
+This covers where Resoft CodingAgent looks for config files, commands, agents, and skills across project, global, and legacy-compatible paths such as `.kilo/`, `.kilocode/`, `.opencode/`, and `~/.config/kilo/`, plus Agent Manager setup/run scripts in the VS Code extension.
+
+## Install
+
+The published npm package is `@chinaresoft/resoftcode`. After a global install, `resoftcode`, `resoft`, `kilo`, and `kilocode` all launch the same binary, so existing shell muscle memory and CI scripts keep working.
+
+```bash
+npm install -g @chinaresoft/resoftcode
+resoftcode --version # canonical
+resoft --version     # compatibility alias
+kilo --version      # backward-compat alias
+kilocode --version  # backward-compat alias
+```
+
+The per-platform packages are `@chinaresoft/resoftcode-darwin-arm64`, `@chinaresoft/resoftcode-darwin-x64`, `@chinaresoft/resoftcode-linux-arm64`, `@chinaresoft/resoftcode-linux-x64`, and the Windows variants. They are pulled in automatically as `optionalDependencies` of the meta package, so a plain `npm install -g @chinaresoft/resoftcode` Just Works on every supported platform.
+
+For local dev builds in this repo, `bun run dev` (or the `bin/resoft` / `bin/kilodev` compatibility shims) is the equivalent.
+
+## Resoft V1 Starter
+
+Run this from a project root to install the CLI-first regulatory reporting workflow pack:
+
+```bash
+kilo resoft init
+```
+
+It writes:
+
+- `kilo.jsonc` with the `resoft/coding-plan` OpenAI-compatible provider
+- `.kilo/command/regulatory-reporting-v1.md`
+- `.kilo/agent/*.md` for business analysis, data quality, ETL, data testing, test data, scripts, data analysis, regulatory reporting, and regulation interpretation
+
+Existing files are not overwritten unless `--force` is passed. Use `--dry-run` to preview the file list.
 
 ## Commands (`.kilo/command/*.md`)
 
@@ -196,22 +228,28 @@ Rules are evaluated top-to-bottom — the **last** matching rule wins. Put broad
 
 ```jsonc
 {
+  "model": "resoft/coding-plan",
+  "subagent_model": "resoft/coding-plan",
+  "enabled_providers": ["resoft"],
   "provider": {
-    "anthropic": {
+    "resoft": {
+      "name": "Resoft Coding Plan",
+      "npm": "@ai-sdk/openai-compatible",
       "options": {
-        "apiKey": "sk-...",
-        "baseURL": "https://custom.endpoint/v1",
+        "apiKey": "{env:RESOFT_API_KEY}",
+        "baseURL": "http://127.0.0.1:8000/v1",
         "timeout": 300000,
       },
       "models": {
-        "custom-model": { "name": "My Model" },
+        "coding-plan": {
+          "name": "Coding Plan Local",
+          "tool_call": true,
+          "reasoning": true,
+          "limit": { "context": 128000, "output": 16000 },
+        },
       },
-      "whitelist": ["claude-*"],
-      "blacklist": ["claude-2*"],
     },
   },
-  "disabled_providers": ["openai"],
-  "enabled_providers": ["anthropic"],
 }
 ```
 

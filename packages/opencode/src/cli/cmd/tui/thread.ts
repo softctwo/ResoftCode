@@ -94,12 +94,12 @@ export function resolveThreadDirectory(project?: string, envPWD = process.env.PW
 
 export const TuiThreadCommand = cmd({
   command: "$0 [project]",
-  describe: "start kilo tui", // kilocode_change
+  describe: "start Resoft CodingAgent TUI", // kilocode_change
   builder: (yargs) =>
     withNetworkOptions(yargs)
       .positional("project", {
         type: "string",
-        describe: "path to start kilo in", // kilocode_change
+        describe: "path to start Resoft CodingAgent in", // kilocode_change
       })
       .option("model", {
         type: "string",

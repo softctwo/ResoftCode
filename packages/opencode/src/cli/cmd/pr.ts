@@ -28,7 +28,7 @@ export function cliCommand(
 
 export const PrCommand = effectCmd({
   command: `${subcommand} <number>`, // kilocode_change
-  describe: "fetch and checkout a GitHub PR branch, then run kilo", // kilocode_change
+  describe: "fetch and checkout a GitHub PR branch, then run Resoft CodingAgent", // kilocode_change
   builder: (yargs) =>
     yargs.positional("number", {
       type: "number",

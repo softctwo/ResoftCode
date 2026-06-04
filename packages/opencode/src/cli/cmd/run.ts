@@ -1,4 +1,4 @@
-// kilocode_change start - use Kilo CLI branding
+// kilocode_change start - use Resoft CLI branding
 // CLI entry point for `kilo run`.
 //
 // Handles three modes:
@@ -126,7 +126,7 @@ async function toolError(part: ToolPart) {
 
 export const RunCommand = effectCmd({
   command: "run [message..]",
-  describe: "run kilo with a message", // kilocode_change
+  describe: "run Resoft CodingAgent with a message", // kilocode_change
   // --attach connects to a remote server (no local instance needed); the
   // default path runs an in-process server and needs the project instance.
   instance: (args) => !args.attach,
@@ -196,7 +196,7 @@ export const RunCommand = effectCmd({
       })
       .option("attach", {
         type: "string",
-        describe: "attach to a running kilo server (e.g., http://localhost:4096)", // kilocode_change
+        describe: "attach to a running Resoft CodingAgent server (e.g., http://localhost:4096)", // kilocode_change
       })
       .option("password", {
         alias: ["p"],

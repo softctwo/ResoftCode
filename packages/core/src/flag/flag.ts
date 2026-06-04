@@ -105,6 +105,13 @@ export const Flag = {
   get KILO_CONFIG_DIR() {
     return process.env["KILO_CONFIG_DIR"]
   },
+  // resoft_change - canonical Resoft config override with Kilo compatibility fallback
+  get RESOFT_CONFIG_DIR() {
+    return process.env["RESOFT_CONFIG_DIR"]
+  },
+  get RESOFT_CLI() {
+    return truthy("RESOFT_CLI")
+  },
   get KILO_PURE() {
     return truthy("KILO_PURE")
   },

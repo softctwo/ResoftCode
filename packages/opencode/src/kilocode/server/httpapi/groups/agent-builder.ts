@@ -1,4 +1,5 @@
 import { Authorization } from "@/server/routes/instance/httpapi/middleware/authorization"
+import { Brand } from "@/kilocode/brand"
 import { InstanceContextMiddleware } from "@/server/routes/instance/httpapi/middleware/instance-context"
 import {
   WorkspaceRoutingMiddleware,
@@ -73,15 +74,17 @@ export const AgentBuilderApi = HttpApi.make("agent-builder")
           }),
         ),
       )
-      .annotateMerge(OpenApi.annotations({ title: "agent-builder", description: "Kilo agent builder routes." }))
+      .annotateMerge(
+        OpenApi.annotations({ title: "agent-builder", description: `${Brand.product} agent builder routes.` }),
+      )
       .middleware(InstanceContextMiddleware)
       .middleware(WorkspaceRoutingMiddleware)
       .middleware(Authorization),
   )
   .annotateMerge(
     OpenApi.annotations({
-      title: "kilo HttpApi",
+      title: `${Brand.product} HttpApi`,
       version: "0.0.1",
-      description: "Kilo HttpApi surface.",
+      description: `${Brand.product} HttpApi surface.`,
     }),
   )

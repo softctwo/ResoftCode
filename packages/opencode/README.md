@@ -1,4 +1,4 @@
-# Kilo Code CLI
+# Resoft CLI
 
 The AI coding agent built for the terminal. Generate code from natural language, automate tasks, and run terminal commands -- powered by 500+ AI models.
 
@@ -13,27 +13,27 @@ Kilo is the all-in-one agentic engineering platform. Build, ship, and iterate fa
 ## Install
 
 ```bash
-npm install -g @kilocode/cli
+npm install -g @chinaresoft/resoftcode
 ```
 
 Or run directly with npx:
 
 ```bash
-npx --package @kilocode/cli kilo
+npx --package @chinaresoft/resoftcode resoftcode
 ```
 
 ## Getting Started
 
-Run `kilo` in any project directory to launch the interactive TUI:
+Run `resoftcode` in any project directory to launch the interactive TUI:
 
 ```bash
-kilo
+resoftcode
 ```
 
 Run a one-off task:
 
 ```bash
-kilo run "add input validation to the signup form"
+resoftcode run "add input validation to the signup form"
 ```
 
 ## Features
@@ -44,22 +44,22 @@ kilo run "add input validation to the signup form"
 - **MCP servers** -- extend agent capabilities with the Model Context Protocol
 - **Multiple modes** -- Plan with Architect, code with Coder, debug with Debugger, or create your own
 - **Sessions** -- resume previous conversations and export transcripts
-- **API keys optional** -- bring your own keys or use Kilo credits
+- **API keys optional** -- bring your own keys or configure a local model
 
 ## Commands
 
 | Command               | Description                |
 | --------------------- | -------------------------- |
-| `kilo`                | Launch interactive TUI     |
-| `kilo run "<task>"`   | Run a one-off task         |
-| `kilo auth`           | Manage authentication      |
-| `kilo models`         | List available models      |
-| `kilo mcp`            | Manage MCP servers         |
-| `kilo session list`   | List sessions              |
-| `kilo session delete` | Delete a session           |
-| `kilo export`         | Export session transcripts |
+| `resoftcode`                | Launch interactive TUI     |
+| `resoftcode run "<task>"`   | Run a one-off task         |
+| `resoftcode auth`           | Manage authentication      |
+| `resoftcode models`         | List available models      |
+| `resoftcode mcp`            | Manage MCP servers         |
+| `resoftcode session list`   | List sessions              |
+| `resoftcode session delete` | Delete a session           |
+| `resoftcode export`         | Export session transcripts |
 
-Run `kilo --help` for the full list.
+Run `resoftcode --help` for the full list.
 
 ## Alternative Installation
 
@@ -71,7 +71,7 @@ brew install Kilo-Org/tap/kilo
 
 ### GitHub Releases
 
-Download pre-built binaries from the [Releases page](https://github.com/Kilo-Org/kilocode/releases).
+Download pre-built binaries from the [Releases page](https://github.com/softctwo/Resoftcode/releases).
 
 ## Documentation
 
@@ -80,7 +80,7 @@ Download pre-built binaries from the [Releases page](https://github.com/Kilo-Org
 
 ## Links
 
-- [GitHub](https://github.com/Kilo-Org/kilocode)
+- [GitHub](https://github.com/softctwo/Resoftcode)
 - [Discord](https://kilo.ai/discord)
 - [VS Code Extension](https://kilo.ai/vscode-marketplace)
 - [Website](https://kilo.ai)
