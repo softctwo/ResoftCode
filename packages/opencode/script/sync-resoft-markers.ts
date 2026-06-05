@@ -60,11 +60,21 @@ function sync(): "rewritten" | "unchanged" | "missing-version" {
   return "rewritten"
 }
 
-const result = sync()
-const label = {
-  rewritten: `[sync-resoft-markers] .resoft-version rewritten to match package.json`,
-  unchanged: `[sync-resoft-markers] .resoft-version already matches package.json`,
-  "missing-version": `[sync-resoft-markers] FAIL: no version field found in ${PKG_JSON}`,
-}[result]
-console.log(label)
-process.exit(result === "missing-version" ? 1 : 0)
+// kilocode_change - only run the CLI entry point when this file is
+// invoked directly (`bun run script/sync-resoft-markers.ts`). When the
+// file is imported by `script/publish.ts`, `import.meta.main` is false
+// and we want the module to be inert: the caller reads the result via
+// `sync()` and decides its own exit code. Without this guard, the
+// module-level `process.exit(0)` below used to fire on every import and
+// kill the parent script before it could do its own work — which is
+// why `--pack-only` was silently producing zero tarballs.
+if (import.meta.main) {
+  const result = sync()
+  const label = {
+    rewritten: `[sync-resoft-markers] .resoft-version rewritten to match package.json`,
+    unchanged: `[sync-resoft-markers] .resoft-version already matches package.json`,
+    "missing-version": `[sync-resoft-markers] FAIL: no version field found in ${PKG_JSON}`,
+  }[result]
+  console.log(label)
+  process.exit(result === "missing-version" ? 1 : 0)
+}
