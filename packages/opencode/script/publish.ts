@@ -7,6 +7,12 @@ import { fileURLToPath } from "url"
 const dir = fileURLToPath(new URL("..", import.meta.url))
 process.chdir(dir)
 
+// kilocode_change - re-inject the // resoft_change marker on the
+// version field before we go any further. The next steps read
+// `pkg.version` and write it into the dist tarball, so the marker
+// has to be on the source by the time we get there.
+await import("./sync-resoft-markers.ts")
+
 const registry = "https://registry.npmjs.org/" // resoft_change - publish Resoft CLI to the official npm registry
 const packOnly = process.argv.includes("--pack-only") // resoft_change
 
