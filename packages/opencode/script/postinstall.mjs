@@ -194,8 +194,6 @@ function main() {
   copyTreeSitterResources(binaryPath) // kilocode_change
   copyConsoleResources(binaryPath) // kilocode_change
   fs.chmodSync(target, 0o755)
-||||||| parent of 81c9a4d0b8 (feat: ship Resoft CodingAgent V1 CLI as @chinaresoft/resoftcode)
-  fs.chmodSync(target, 0o755)
   // resoft_change end
 }
 

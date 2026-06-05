@@ -228,5 +228,6 @@
   "homepage": "https://github.com/softctwo/Resoftcode#readme",
   "bugs": {
     "url": "https://github.com/softctwo/Resoftcode/issues"
-  }
+  },
+  "private": false
 }
