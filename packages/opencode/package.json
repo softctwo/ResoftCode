@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "version": "0.1.2", // resoft_change - bump to 0.1.2: rebuild from kilo-org v7.3.31 + Resoft v0.1.1 fixes on top,
+  "version": "0.1.2",
   "name": "@chinaresoft/resoftcode",
   "type": "module",
   "license": "MIT",
