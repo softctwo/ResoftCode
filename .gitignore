@@ -17,7 +17,15 @@ node_modules
 !.vscode/tasks.json
 # use vscode workspaces with peacock to have many vscodes with the same repo:
 *.code-workspace
-.codex
+.codex/*
+.codex/**/*
+# resoft_change - ship the Resoft-Data OMX mode with this repo
+!.codex/README.md
+!.codex/prompts/
+!.codex/prompts/resoft-data.md
+!.codex/skills/
+!.codex/skills/resoft-data/
+!.codex/skills/resoft-data/**
 *~
 playground
 tmp
