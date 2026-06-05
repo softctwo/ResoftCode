@@ -193,7 +193,6 @@ function main() {
   }
   copyTreeSitterResources(binaryPath) // kilocode_change
   copyConsoleResources(binaryPath) // kilocode_change
-  fs.chmodSync(target, 0o755)
   // resoft_change end
 }
 

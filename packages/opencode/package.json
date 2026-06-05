@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/package.json",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "name": "@chinaresoft/resoftcode",
   "type": "module",
   "license": "MIT",
