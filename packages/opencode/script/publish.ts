@@ -30,7 +30,7 @@ async function publish(dir: string, name: string, version: string) {
   }
   await $`bun pm pack`.cwd(dir)
   if (packOnly) return // resoft_change
-  await $`npm publish *.tgz --access public --tag ${Script.channel} --provenance --registry ${registry}`.cwd(dir) // kilocode_change
+  await $`npm publish *.tgz --access public --tag ${Script.channel} --registry ${registry}`.cwd(dir) // kilocode_change - resoft_change: drop --provenance for local publish
 }
 
 const binaries: Record<string, string> = {}
