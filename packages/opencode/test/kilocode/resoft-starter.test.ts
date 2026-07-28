@@ -147,6 +147,7 @@ describe("Resoft provider presets", () => {
 describe("Resoft starter renders provider-aware files", () => {
   test("default files keep the legacy resoft/coding-plan reference", () => {
     const cfg = ResoftStarter.files().find((f) => f.path === "kilo.jsonc")?.content ?? ""
+    expect(cfg).toContain('"default_agent": "resoft-data"')
     expect(cfg).toContain('"model": "resoft/coding-plan"')
     expect(cfg).toContain('"enabled_providers": ["resoft"]')
     expect(cfg).toContain('"apiKey": "{env:RESOFT_API_KEY}"')

@@ -34,10 +34,10 @@ type Body = {
 }
 
 describe("Kilo PublicApi OpenAPI contract", () => {
-  test("uses Kilo branding", () => {
+  test("uses Resoft branding", () => {
     const spec = OpenApi.fromApi(PublicApi)
-    expect(spec.info.title).toBe("kilo")
-    expect(spec.info.description).toBe("kilo api")
+    expect(spec.info.title).toBe("Resoft CodingAgent")
+    expect(spec.info.description).toBe("Resoft CodingAgent API")
   })
 
   test("constrains agent builder route ids", () => {

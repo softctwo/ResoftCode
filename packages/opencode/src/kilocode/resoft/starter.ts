@@ -496,6 +496,7 @@ Stop only when the deliverable is either ready for review with evidence, or bloc
     const modelRef = `${provider.id}/${provider.model.id}`
     return `{
   "$schema": "https://app.kilo.ai/config.json",
+  "default_agent": "resoft-data",
   "model": "${modelRef}",
   "subagent_model": "${modelRef}",
   "enabled_providers": ["${provider.id}"],

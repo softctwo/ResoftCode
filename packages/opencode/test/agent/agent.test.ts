@@ -45,6 +45,7 @@ test("returns default native agents when no config", async () => {
         expect(names).toContain("debug") // kilocode_change
         expect(names).toContain("orchestrator") // kilocode_change
         expect(names).toContain("ask") // kilocode_change
+        expect(names).toContain("resoft-data") // resoft_change
         expect(names).toContain("general")
         expect(names).toContain("explore")
         expect(names).not.toContain("scout")
@@ -74,6 +75,26 @@ test("code agent has correct default properties", async () => {
   })
 })
 // kilocode_change end
+
+test("resoft-data agent is the native default data governance mode", async () => {
+  await using tmp = await tmpdir()
+  await WithInstance.provide({
+    directory: tmp.path,
+    fn: async () => {
+      const data = await load(tmp.path, (svc) => svc.get("resoft-data"))
+      expect(data).toBeDefined()
+      expect(data?.displayName).toBe("Resoft-Data")
+      expect(data?.mode).toBe("primary")
+      expect(data?.native).toBe(true)
+      expect(data?.prompt).toContain("regulatory-reporting-mapping")
+      expect(data?.prompt).toContain("regulatory-etl-development")
+      expect(data?.prompt).toContain("regulatory-data-testing")
+      expect(evalPerm(data, "skill")).toBe("allow")
+      expect(evalPerm(data, "task")).toBe("allow")
+      expect(evalPerm(data, "edit")).toBe("allow")
+    },
+  })
+})
 
 // kilocode_change start - ask agent tests
 test("ask agent has correct default properties", async () => {
@@ -839,13 +860,13 @@ description: Permission skill.
   }
 })
 
-test("defaultAgent returns build when no default_agent config", async () => {
+test("defaultAgent returns resoft-data when no default_agent config", async () => {
   await using tmp = await tmpdir()
   await WithInstance.provide({
     directory: tmp.path,
     fn: async () => {
       const agent = await load(tmp.path, (svc) => svc.defaultAgent())
-      expect(agent).toBe("code") // kilocode_change
+      expect(agent).toBe("resoft-data") // resoft_change
     },
   })
 })
@@ -929,12 +950,32 @@ test("defaultAgent throws when default_agent points to non-existent agent", asyn
   })
 })
 
+// resoft_change start - Resoft-Data is the first implicit default; code is fallback.
+test("defaultAgent returns code when resoft-data is disabled and default_agent not set", async () => {
+  await using tmp = await tmpdir({
+    config: {
+      agent: {
+        "resoft-data": { disable: true },
+      },
+    },
+  })
+  await WithInstance.provide({
+    directory: tmp.path,
+    fn: async () => {
+      const agent = await load(tmp.path, (svc) => svc.defaultAgent())
+      expect(agent).toBe("code")
+    },
+  })
+})
+// resoft_change end
+
 // kilocode_change start - renamed from "build" to "code"
-test("defaultAgent returns plan when code is disabled and default_agent not set", async () => {
+test("defaultAgent returns plan when resoft-data and code are disabled and default_agent not set", async () => {
   // kilocode_change end
   await using tmp = await tmpdir({
     config: {
       agent: {
+        "resoft-data": { disable: true }, // resoft_change
         // kilocode_change start - renamed from "build" to "code"
         code: { disable: true },
         // kilocode_change end
@@ -952,17 +993,21 @@ test("defaultAgent returns plan when code is disabled and default_agent not set"
 })
 
 test("defaultAgent throws when all primary agents are disabled", async () => {
+  await using base = await tmpdir()
+  const names = await WithInstance.provide({
+    directory: base.path,
+    fn: async () =>
+      load(base.path, (svc) =>
+        Effect.map(svc.list(), (agents) =>
+          agents.filter((agent) => agent.mode !== "subagent" && agent.hidden !== true).map((agent) => agent.name),
+        ),
+      ),
+  })
   await using tmp = await tmpdir({
     config: {
-      agent: {
-        // kilocode_change start - disable all primary agents
-        code: { disable: true },
-        plan: { disable: true },
-        debug: { disable: true },
-        orchestrator: { disable: true },
-        ask: { disable: true },
-        // kilocode_change end
-      },
+      // kilocode_change - disable the full current primary set, including
+      // primary agents injected by local/global config in this test environment.
+      agent: Object.fromEntries(names.map((name) => [name, { disable: true }])),
     },
   })
   await WithInstance.provide({

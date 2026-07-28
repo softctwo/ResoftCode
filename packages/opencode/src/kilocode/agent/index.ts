@@ -14,6 +14,7 @@ import PROMPT_DEBUG from "../../agent/prompt/debug.txt"
 import PROMPT_ORCHESTRATOR from "../../agent/prompt/orchestrator.txt"
 import PROMPT_ASK from "../../agent/prompt/ask.txt"
 import PROMPT_EXPLORE from "../../agent/prompt/explore.txt"
+import PROMPT_RESOFT_DATA from "./resoft-data.txt"
 
 export const bash: Record<string, "allow" | "ask" | "deny"> = {
   "*": "ask",
@@ -279,7 +280,7 @@ export function telemetryOptions(_cfg: Config.Info) {
 // - Patch plan with readOnlyBash, mcpRules, .kilo paths
 // - Patch explore with codebase_search and conditional prompt
 // - Patch appropriate agents with semantic_search
-// - Add debug, orchestrator, ask agents
+// - Add debug, orchestrator, ask, resoft-data agents
 export function patchAgents(
   agents: Record<
     string,
@@ -442,6 +443,34 @@ export function patchAgents(
     prompt: PROMPT_ASK,
     options: {},
     permission: Permission.merge(defaults, askGuard(kilo.mcpRules), user, askEditGuard(), denies(user)),
+    mode: "primary",
+    native: true,
+  }
+
+  // resoft_change - make Resoft-Data the native default delivery mode for
+  // data governance and regulatory reporting projects.
+  agents["resoft-data"] = {
+    name: "resoft-data",
+    displayName: "Resoft-Data",
+    description:
+      "Default Resoft data governance and regulatory reporting agent. Routes mapping, ETL, data quality, testing, test data, and attribution work through the built-in regulatory skills.",
+    prompt: PROMPT_RESOFT_DATA,
+    options: { displayName: "Resoft-Data" },
+    permission: Permission.merge(
+      defaults,
+      Permission.fromConfig({
+        question: "allow",
+        suggest: "allow",
+        plan_enter: "allow",
+        skill: "allow",
+        task: "allow",
+        todoread: "allow",
+        todowrite: "allow",
+        semantic_search: "allow",
+        codebase_search: "allow",
+      }),
+      user,
+    ),
     mode: "primary",
     native: true,
   }

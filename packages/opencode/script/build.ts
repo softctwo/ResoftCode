@@ -20,6 +20,12 @@ import { Script } from "@opencode-ai/script"
 import pkg from "../package.json"
 import { LanceDBRuntime } from "../src/kilocode/lancedb" // kilocode_change
 
+// resoft_change - Resoft package builds must use the OEM package version.
+// @opencode-ai/script computes the next upstream Kilo version from the npm
+// registry, which can diverge from packages/opencode/package.json and produce
+// binaries whose --version does not match the Resoft package being packed.
+const version = pkg.version
+
 // Load migrations from migration directories
 const migrationDirs = (
   await fs.promises.readdir(path.join(dir, "migration"), {
@@ -266,7 +272,7 @@ for (const item of targets) {
       autoloadPackageJson: true,
       target: name.replace(pkg.name, "bun") as any,
       outfile: `dist/${name}/bin/resoftcode`, // resoft_change
-      execArgv: [`--user-agent=resoftcode/${Script.version}`, "--use-system-ca", "--"], // resoft_change
+      execArgv: [`--user-agent=resoftcode/${version}`, "--use-system-ca", "--"], // resoft_change
       windows: {},
     },
     // kilocode_change start - packages/app was removed; no embedded web UI
@@ -274,7 +280,7 @@ for (const item of targets) {
     entrypoints: ["./src/index.ts", parserWorker, workerPath, sessionExportWorkerPath, indexingWorkerPath],
     // kilocode_change end
     define: {
-      KILO_VERSION: `'${Script.version}'`,
+      KILO_VERSION: `'${version}'`, // resoft_change
       KILO_MIGRATIONS: JSON.stringify(migrations),
       OTUI_TREE_SITTER_WORKER_PATH: bunfsRoot + workerRelativePath,
       KILO_WORKER_PATH: workerPath,
@@ -328,7 +334,7 @@ for (const item of targets) {
     JSON.stringify(
       {
         name,
-        version: Script.version,
+        version, // resoft_change
         os: [item.os],
         cpu: [item.arch],
         keywords: pkg.keywords, // kilocode_change
@@ -348,7 +354,7 @@ for (const item of targets) {
       2,
     ),
   )
-  binaries[name] = Script.version
+  binaries[name] = version // resoft_change
 }
 
 if (Script.release) {
@@ -365,7 +371,7 @@ if (Script.release) {
       archives.push(out) // kilocode_change
     }
   }
-  await $`gh release upload v${Script.version} ${archives} --clobber` // kilocode_change
+  await $`gh release upload v${version} ${archives} --clobber` // resoft_change
 }
 
 export { binaries }

@@ -366,7 +366,7 @@
     },
     "packages/opencode": {
       "name": "@chinaresoft/resoftcode",
-      "version": "0.1.2",
+      "version": "0.1.5",
       "bin": {
         "resoftcode": "bin/resoft",
         "resoft": "bin/resoft",

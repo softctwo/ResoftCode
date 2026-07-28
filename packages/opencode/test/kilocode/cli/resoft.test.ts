@@ -327,6 +327,7 @@ describe("kilo resoft end-to-end", () => {
       //    can satisfy apiKey with the RESOFT_API_KEY we set above.
       await run(["resoft", "init", "--dir", tmp.path])
       const cfg = await Bun.file(path.join(tmp.path, "kilo.jsonc")).text()
+      expect(cfg).toContain('"default_agent": "resoft-data"')
       expect(cfg).toContain('"model": "resoft/coding-plan"')
 
       // 2. validate the installed pack — must report no failures
@@ -337,7 +338,8 @@ describe("kilo resoft end-to-end", () => {
       // 3. start --dry-run initializes (already initialized) and prints the run command
       process.exitCode = 0
       const startOut = await captureStderr(() => run(["start", "--dry-run", "--dir", tmp.path]))
-      expect(startOut).toContain("resoft")
+      expect(startOut).toContain("Resoft CodingAgent starting")
+      expect(startOut).toContain("run --interactive")
       expect(process.exitCode).toBe(0)
     } finally {
       if (prevKey === undefined) delete process.env["RESOFT_API_KEY"]

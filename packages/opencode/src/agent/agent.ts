@@ -420,7 +420,8 @@ export const layer = Layer.effect(
             agents,
             values(),
             sortBy(
-              [(x) => (cfg.default_agent ? x.name === cfg.default_agent : x.name === "code"), "desc"], // kilocode_change - renamed from "build" to "code"
+              // resoft_change - Resoft-Data is the product default when no explicit default_agent is configured.
+              [(x) => (cfg.default_agent ? x.name === cfg.default_agent : x.name === "resoft-data"), "desc"],
               [(x) => x.name, "asc"],
             ),
           )
@@ -436,7 +437,11 @@ export const layer = Layer.effect(
             if (agent.hidden === true) throw new Error(`default agent "${c.default_agent}" is hidden`)
             return agent.name
           }
-          // kilocode_change start - prefer "code" as default agent (key order changes after rename from "build")
+          // resoft_change start - prefer Resoft-Data as the default product agent.
+          const data = agents["resoft-data"]
+          if (data && data.mode !== "subagent" && data.hidden !== true) return data.name
+          // resoft_change end
+          // kilocode_change start - prefer "code" as fallback agent (key order changes after rename from "build")
           const code = agents.code
           if (code && code.mode !== "subagent" && code.hidden !== true) return code.name
           // kilocode_change end

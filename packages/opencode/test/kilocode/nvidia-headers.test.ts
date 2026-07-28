@@ -19,7 +19,7 @@ function withNvidiaKey<A, E, R>(self: Effect.Effect<A, E, R>) {
   })
 }
 
-it.live("nvidia provider includes KiloCode billing origin header", () =>
+it.live("nvidia provider includes Resoft billing origin header", () =>
   provideTmpdirInstance(() =>
     withNvidiaKey(
       Provider.Service.use((provider) =>
@@ -27,9 +27,9 @@ it.live("nvidia provider includes KiloCode billing origin header", () =>
           const providers = yield* provider.list()
           const headers = providers[ProviderID.make("nvidia")].options.headers
 
-          expect(headers["HTTP-Referer"]).toBe("https://kilo.ai/")
+          expect(headers["HTTP-Referer"]).toBe("https://github.com/softctwo/Resoftcode")
           expect(headers["X-Title"]).toBe("Resoft CLI")
-          expect(headers["X-BILLING-INVOKE-ORIGIN"]).toBe("KiloCode")
+          expect(headers["X-BILLING-INVOKE-ORIGIN"]).toBe("ResoftCode")
         }),
       ),
     ),
@@ -63,7 +63,7 @@ it.live("nvidia billing origin header can be overridden from config", () =>
             const providers = yield* provider.list()
             const headers = providers[ProviderID.make("nvidia")].options.headers
 
-            expect(headers["HTTP-Referer"]).toBe("https://kilo.ai/")
+            expect(headers["HTTP-Referer"]).toBe("https://github.com/softctwo/Resoftcode")
             expect(headers["X-Title"]).toBe("Resoft CLI")
             expect(headers["X-BILLING-INVOKE-ORIGIN"]).toBe("CustomOrigin")
           }),

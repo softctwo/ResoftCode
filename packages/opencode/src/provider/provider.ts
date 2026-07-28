@@ -1349,13 +1349,27 @@ const layer: Layer.Layer<
           const stored = yield* auth.get(providerID).pipe(Effect.orDie)
           if (!stored) continue
           if (!plugin.auth.loader) continue
+          // kilocode_change start - skip plugin auth providers missing from models.dev
+          // Plugins (e.g. github-copilot) are not part of the public models.dev
+          // catalog, so database[...] is undefined for them. Without this guard,
+          // toPublicInfo(undefined) hits JSON.parse("undefined") and crashes
+          // the provider init. Mirror the skip-if-missing pattern used for
+          // custom loaders a few lines below.
+          const data = database[plugin.auth.provider]
+          if (!data) {
+            log.debug("plugin provider not in model catalog, skipping auth loader", {
+              providerID,
+            })
+            continue
+          }
 
           const options = yield* Effect.promise(() =>
             plugin.auth!.loader!(
               () => bridge.promise(auth.get(providerID).pipe(Effect.orDie)) as any,
-              toPublicInfo(database[plugin.auth!.provider]),
+              toPublicInfo(data),
             ),
           )
+          // kilocode_change end
           const opts = options ?? {}
           const patch: Partial<Info> = providers[providerID] ? { options: opts } : { source: "custom", options: opts }
           mergeProvider(providerID, patch)

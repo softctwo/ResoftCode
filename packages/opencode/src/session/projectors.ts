@@ -1,4 +1,3 @@
-import { NotFoundError } from "@/storage/storage"
 import { eq } from "drizzle-orm"
 import { and } from "drizzle-orm"
 import { SyncEvent } from "@/sync"
@@ -84,7 +83,10 @@ export default [
       .where(eq(SessionTable.id, data.sessionID))
       .returning()
       .get()
-    if (!row) throw new NotFoundError({ message: `Session not found: ${data.sessionID}` })
+    // Late updates for an already-deleted session can arrive after a test
+    // reset (e.g. serverPathParity in test/server/httpapi-sdk.test.ts).
+    // Treat them as no-ops instead of crashing the sync transaction.
+    if (!row) log.warn("ignored late session update", { sessionID: data.sessionID })
   }),
 
   SyncEvent.project(Session.Event.Deleted, (db, data) => {

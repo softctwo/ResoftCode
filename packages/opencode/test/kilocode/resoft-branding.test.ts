@@ -26,12 +26,34 @@ async function src(file: string) {
 }
 
 describe("Resoft OEM branding", () => {
+  test("session identity prompts use Resoft CodingAgent instead of Kilo", async () => {
+    const files = await Promise.all([
+      src("src/session/prompt/default.txt"),
+      src("src/session/prompt/ling.txt"),
+      src("src/session/prompt/anthropic.txt"),
+      src("src/session/prompt/kilocode-gpt-5.5.txt"),
+      src("src/session/prompt/kimi.txt"),
+      src("src/session/prompt/gemini.txt"),
+      src("src/session/prompt/gpt.txt"),
+      src("src/session/prompt/codex.txt"),
+      src("src/session/prompt/beast.txt"),
+      src("src/kilocode/soul.txt"),
+    ])
+    const text = files.join("\n")
+
+    expect(text).toContain("You are Resoft CodingAgent")
+    expect(text).not.toContain("You are Kilo")
+    expect(text).not.toContain("using Kilo")
+    expect(text).not.toContain("Kilo honestly")
+  })
+
   test("startup TUI surfaces use the Resoft brand layer", async () => {
     const files = await Promise.all([
       src("src/kilocode/plugins/home-onboarding.tsx"),
       src("src/kilocode/plugins/sidebar-footer.tsx"),
       src("src/kilocode/components/tips.tsx"),
       src("src/kilocode/cli/cmd/tui/app.tsx"),
+      src("src/cli/cmd/uninstall.ts"),
     ])
     const text = files.join("\n")
 
@@ -41,7 +63,10 @@ describe("Resoft OEM branding", () => {
     expect(text).not.toContain("Ask Kilo")
     expect(text).not.toContain("headless API access to Kilo")
     expect(text).not.toContain('APP_TITLE = "Kilo CLI"')
+    expect(text).not.toContain("Thank you for using Kilo!")
+    expect(text).not.toContain("Uninstall Kilo")
     expect(text).toContain("APP_TITLE = Brand.cliTitle")
+    expect(text).toContain("Brand.product")
     expect(Brand.cliTitle).toBe("Resoft CLI")
   })
 

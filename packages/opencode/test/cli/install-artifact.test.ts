@@ -39,6 +39,17 @@ describe("npm install artifact behavior", () => {
     expect(text).toContain("packed ${pkg.name}@${version} locally without publishing")
   })
 
+  test("uses the Resoft package version for built artifacts", async () => {
+    const build = await fs.readFile(path.join(root, "script", "build.ts"), "utf8")
+    const publish = await fs.readFile(path.join(root, "script", "publish.ts"), "utf8")
+    expect(build).toContain("const version = pkg.version")
+    expect(build).toContain("KILO_VERSION: `'${version}'`")
+    expect(build).toContain("binaries[name] = version")
+    expect(build).not.toContain("KILO_VERSION: `'${Script.version}'`")
+    expect(publish).toContain("const version = Object.values(binaries)[0]")
+    expect(publish).toContain("releases/download/v${version}")
+  })
+
   test("links npm bin commands to the wrapper during local install", async () => {
     const npmPath = Bun.which("npm")
     if (!npmPath) {

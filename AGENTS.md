@@ -206,19 +206,17 @@ For decision rules on when to keep changes inline vs. extract Kilo logic, marker
 <claude-mem-context>
 # Memory Context
 
-# [ResoftCode] recent context, 2026-06-05 4:44pm GMT+8
+# [ResoftCode] recent context, 2026-06-16 10:22am GMT+8
 
 Legend: 🎯session 🔴bugfix 🟣feature 🔄refactor ✅change 🔵discovery ⚖️decision 🚨security_alert 🔐security_note
 Format: ID TIME TYPE TITLE
 Fetch details: get_observations([IDs]) | Search: mem-search skill
 
-Stats: 50 obs (10,536t read) | 6,354,493t work | 100% savings
+Stats: 50 obs (10,123t read) | 6,351,128t work | 100% savings
 
 ### Jun 3, 2026
+S144 发布 @chinaresoft/resoftcode v0.1.5 版本 (Jun 3 at 2:04 PM)
 S113 支持多模型 Provider 配置 (Jun 3 at 2:04 PM)
-252 2:07p ⚖️ Provider配置系统需支持多模型Provider
-253 2:10p 🟣 Resoft Starter 多模型 Provider 配置系统重构
-254 2:11p 🟣 Resoft Starter CLI 多模型 Provider 配置实现完成
 255 2:12p 🔵 Resoft Provider 配置测试全部通过
 256 " 🔵 Global.Path 配置路径基于 XDG 规范
 257 2:14p 🔵 配置系统使用 jsonc-parser 解析 kilo.jsonc
@@ -266,6 +264,33 @@ S113 支持多模型 Provider 配置 (Jun 3 at 2:04 PM)
 299 4:43p 🟣 bin/resoft dev shim 增强 bun 路径自发现，e2e 验证 CLI 名称自适应
 300 " ⚖️ 品牌重命名边界决策：新命令用 Brand 模块，上游命令保留 "kilo" 描述
 301 4:44p 🟣 ResoftStartCommand 提取为独立导出并双路径注册，TUI 默认命令描述重命名
+### Jun 8, 2026
+514 8:32a 🔵 OMX Explore 执行仓库探查请求
+515 9:43a 🔵 大连银行多维审计项目进度基线
+516 " ✅ 准备发布包至 npmjs 仓库
+S143 发布 @chinaresoft/resoftcode v0.1.5 版本 (Jun 8 at 9:48 AM)
+**Investigated**: 检查了 Git 工作树状态：25 个修改文件、2 个未跟踪文件（含 .changeset/v0.1.5.md 和 packages/opencode/src/kilocode/agent/resoft-data.txt）。
+    读取了 changeset v0.1.5.md，了解该补丁修复了构建版本源和发布资产元数据版本不一致的问题。
+    确认了 packages/opencode/package.json 和 .resoft-version 中的版本号均为 0.1.5。
+    查看了 script/build.ts 和 script/publish.ts 的修改：build.ts 直接使用 pkg.version 嵌入 KILO_VERSION，publish.ts 支持 --pack-only 且禁用 Homebrew tap 推送。
+    通过 npm view 验证了 0.1.5 尚未发布到 npm（返回 404）。
+    检查了 packages/opencode/dist/ 目录，存在 @chinaresoft 发布目录。
 
-Access 6354k tokens of past work via get_observations([IDs]) or mem-search skill.
+**Learned**: ResoftCode 采用 changeset 机制管理版本发布，但实际的构建和发布由自定义的 Bun 脚本（build.ts / publish.ts）驱动，而非标准 changeset CLI。
+    build.ts 之前从 @opencode-ai/script 计算上游 Kilo 版本，导致 Resoft 二进制文件报告的版本与 package.json 不一致；v0.1.5 改为直接读取 pkg.version。
+    publish.ts 中 Homebrew tap 推送被显式禁用（tap 为空字符串），因为 ResoftCode 尚未创建对应的 Homebrew tap 仓库。
+    发布流程包含：同步 OEM marker → 构建 → 打包 → 可选的 npm publish → Docker 镜像 → AUR PKGBUILD → Homebrew formula。
+
+**Completed**: 版本号已更新：packages/opencode/package.json 和 .resoft-version 均已标记为 0.1.5。
+    Changeset 文件 .changeset/v0.1.5.md 已创建，包含补丁说明和升级指引。
+    构建脚本和发布脚本已完成修改，确保版本一致性。
+    尚未执行实际的构建、打包或发布操作。
+
+**Next Steps**: 将 25 个修改文件和 changeset 提交为一个发布提交（如 chore(release): bump to v0.1.5）。
+    运行构建脚本生成 dist 产物。
+    执行 publish.ts --pack-only 本地验证打包，或执行完整 publish 推送到 npm registry。
+    发布后验证 npm install -g @chinaresoft/resoftcode@0.1.5 可正常安装。
+
+
+Access 6351k tokens of past work via get_observations([IDs]) or mem-search skill.
 </claude-mem-context>

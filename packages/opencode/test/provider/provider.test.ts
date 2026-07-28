@@ -2679,3 +2679,49 @@ test("opencode loader keeps paid models when auth exists", async () => {
     }
   }
 })
+
+// kilocode_change start - regression for provider init crash when a plugin's
+// auth.provider is not in the models.dev catalog. Before the guard in
+// src/provider/provider.ts, toPublicInfo(undefined) hit JSON.parse("undefined")
+// and aborted every `resoftcode run` that touched a built-in plugin like
+// github-copilot, even for users who never authenticated with that plugin.
+test("plugin auth loader skips when its provider is not in the model catalog", async () => {
+  const authPath = path.join(Global.Path.data, "auth.json")
+  const prev = await Filesystem.readText(authPath).catch(() => undefined)
+
+  try {
+    // github-copilot is shipped as a built-in plugin (see src/plugin/index.ts
+    // INTERNAL_PLUGINS) and its auth.provider is "github-copilot", which is
+    // not a key in the models.dev catalog. Stored auth for such a provider
+    // would previously crash the provider init.
+    await Filesystem.write(
+      authPath,
+      JSON.stringify({
+        "github-copilot": {
+          type: "oauth",
+          refresh: "test-refresh",
+          access: "test-access",
+          expires: Date.now() + 60_000,
+        },
+      }),
+    )
+
+    await using tmp = await tmpdir({ git: false })
+    await WithInstance.provide({
+      directory: tmp.path,
+      fn: async () => {
+        const providers = await list()
+        // Must not throw. github-copilot itself does not have to appear
+        // in the list because its loader was intentionally skipped.
+        expect(providers).toBeDefined()
+      },
+    })
+  } finally {
+    if (prev !== undefined) {
+      await Filesystem.write(authPath, prev)
+      return
+    }
+    await unlink(authPath).catch(() => undefined)
+  }
+})
+// kilocode_change end

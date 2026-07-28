@@ -111,7 +111,7 @@ if (!Script.preview) {
   const macX64Sha = await $`sha256sum ./dist/resoft-darwin-x64.zip | cut -d' ' -f1`.text().then((x) => x.trim())
   const macArm64Sha = await $`sha256sum ./dist/resoft-darwin-arm64.zip | cut -d' ' -f1`.text().then((x) => x.trim())
 
-  const [pkgver, _subver = ""] = Script.version.split(/(-.*)/, 2)
+  const [pkgver, _subver = ""] = version.split(/(-.*)/, 2) // resoft_change
 
   // arch
   const binaryPkgbuild = [
@@ -156,7 +156,7 @@ if (!Script.preview) {
         await $`cd ./dist/aur-${pkg} && makepkg --printsrcinfo > .SRCINFO`
         await $`cd ./dist/aur-${pkg} && git add PKGBUILD .SRCINFO`
         if ((await $`cd ./dist/aur-${pkg} && git diff --cached --quiet`.nothrow()).exitCode === 0) break
-        await $`cd ./dist/aur-${pkg} && git commit -m "Update to v${Script.version}"`
+        await $`cd ./dist/aur-${pkg} && git commit -m "Update to v${version}"` // resoft_change
         await $`cd ./dist/aur-${pkg} && git push`
         break
       } catch {
@@ -174,13 +174,13 @@ if (!Script.preview) {
     "class Resoft < Formula", // kilocode_change
     `  desc "The AI coding agent built for the terminal."`,
     `  homepage "https://kilo.ai"`, // kilocode_change
-    `  version "${Script.version.split("-")[0]}"`,
+    `  version "${version.split("-")[0]}"`, // resoft_change
     "",
     `  depends_on "ripgrep"`,
     "",
     "  on_macos do",
     "    if Hardware::CPU.intel?",
-    `      url "https://github.com/softctwo/Resoftcode/releases/download/v${Script.version}/resoft-darwin-x64.zip"`,
+    `      url "https://github.com/softctwo/Resoftcode/releases/download/v${version}/resoft-darwin-x64.zip"`, // resoft_change
     `      sha256 "${macX64Sha}"`,
     "",
     "      def install",
@@ -189,7 +189,7 @@ if (!Script.preview) {
     "      end",
     "    end",
     "    if Hardware::CPU.arm?",
-    `      url "https://github.com/softctwo/Resoftcode/releases/download/v${Script.version}/resoft-darwin-arm64.zip"`,
+    `      url "https://github.com/softctwo/Resoftcode/releases/download/v${version}/resoft-darwin-arm64.zip"`, // resoft_change
     `      sha256 "${macArm64Sha}"`,
     "",
     "      def install",
@@ -201,7 +201,7 @@ if (!Script.preview) {
     "",
     "  on_linux do",
     "    if Hardware::CPU.intel? and Hardware::CPU.is_64_bit?",
-    `      url "https://github.com/softctwo/Resoftcode/releases/download/v${Script.version}/resoft-linux-x64.tar.gz"`,
+    `      url "https://github.com/softctwo/Resoftcode/releases/download/v${version}/resoft-linux-x64.tar.gz"`, // resoft_change
     `      sha256 "${x64Sha}"`,
     "      def install",
     '        libexec.install "resoft", "tree-sitter"', // resoft_change
@@ -209,7 +209,7 @@ if (!Script.preview) {
     "      end",
     "    end",
     "    if Hardware::CPU.arm? and Hardware::CPU.is_64_bit?",
-    `      url "https://github.com/softctwo/Resoftcode/releases/download/v${Script.version}/resoft-linux-arm64.tar.gz"`,
+    `      url "https://github.com/softctwo/Resoftcode/releases/download/v${version}/resoft-linux-arm64.tar.gz"`, // resoft_change
     `      sha256 "${arm64Sha}"`,
     "      def install",
     '        libexec.install "resoft", "tree-sitter"', // resoft_change
@@ -236,7 +236,7 @@ if (!Script.preview) {
   await Bun.file("./dist/homebrew-tap/kilo.rb").write(homebrewFormula) // kilocode_change
   await $`cd ./dist/homebrew-tap && git add kilo.rb` // kilocode_change
   if ((await $`cd ./dist/homebrew-tap && git diff --cached --quiet`.nothrow()).exitCode !== 0) {
-    await $`cd ./dist/homebrew-tap && git commit -m "Update to v${Script.version}"`
+    await $`cd ./dist/homebrew-tap && git commit -m "Update to v${version}"` // resoft_change
     await $`cd ./dist/homebrew-tap && git push`
   }
 }
