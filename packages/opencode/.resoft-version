@@ -1,8 +1,8 @@
 # Resoft CodingAgent — package.json version marker
 #
-# The Resoft-owned version is 0.2.0.
-# The kilo-org baseline is 7.3.63; this file is the
+# The Resoft-owned version is 0.3.0.
+# The kilo-org baseline is 7.4.16; this file is the
 # OEM signal that the version field in package.json is allowed
-# to diverge from that baseline. Do not reset to 7.3.63 on
+# to diverge from that baseline. Do not reset to 7.4.16 on
 # upstream sync. If you bump the Resoft version, update both
 # this file and the version field in package.json together.
