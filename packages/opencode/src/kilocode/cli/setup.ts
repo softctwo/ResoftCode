@@ -15,6 +15,8 @@ import {
   ProfileCommand,
   PtySmokeCommand,
   RemoteCommand,
+  ResoftCommand,
+  ResoftStartCommand,
   RollCallCommand,
   WorktreeCommand,
 } from "@/kilocode/cli/lazy-kilo-commands"
@@ -51,6 +53,8 @@ export namespace KiloCli {
       .command(DaemonCommand)
       .command(ConfigCLICommand)
       .command(WorktreeCommand)
+      .command(ResoftStartCommand)
+      .command(ResoftCommand)
     if (process.env.KILO_PTY_SMOKE === "1") cli.command(PtySmokeCommand)
     if (InstallationBuildKind !== "release") cli.command(DevSetupCommand).command(DevAliasCommand)
     // Safe self-reference: `cli` is a typed parameter and yargs `.command()` returns the same

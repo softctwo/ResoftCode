@@ -1,4 +1,5 @@
 import { lazy } from "@/kilocode/cli/lazy-commands"
+import { Brand } from "@/kilocode/brand"
 
 export const KiloConsoleCommand = lazy({
   command: "console",
@@ -58,6 +59,19 @@ export const DevSetupCommand = lazy({
   command: "dev-setup",
   describe: "install a `kilodev` shell alias for this checkout",
   load: async () => (await import("@/kilocode/cli/dev-setup")).DevSetupCommand,
+})
+
+export const ResoftCommand = lazy({
+  command: "project",
+  aliases: ["resoft"],
+  describe: `${Brand.product} project tools`,
+  load: async () => (await import("@/kilocode/cli/cmd/resoft")).ResoftCommand,
+})
+
+export const ResoftStartCommand = lazy({
+  command: "start [message..]",
+  describe: `start ${Brand.product} in the current terminal`,
+  load: async () => (await import("@/kilocode/cli/cmd/resoft")).ResoftStartCommand,
 })
 
 export const DevAliasCommand = lazy({

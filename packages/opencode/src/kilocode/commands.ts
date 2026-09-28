@@ -30,6 +30,7 @@ import { ProfileCommand } from "./cli/cmd/profile"
 import { DaemonCommand } from "./cli/cmd/daemon"
 import { KiloConsoleCommand } from "./cli/cmd/console"
 import { CloudCommand } from "./cli/cmd/cloud"
+import { ResoftCommand, ResoftStartCommand } from "./cli/cmd/resoft"
 import { HelpCommand } from "./help-command"
 import { InstallationBuildKind } from "@opencode-ai/core/installation/version"
 
@@ -73,6 +74,8 @@ export const commands = [
   DaemonCommand,
   KiloConsoleCommand,
   CloudCommand,
+  ResoftStartCommand,
+  ResoftCommand,
   DbCommand,
   ConfigCLICommand,
   ...dev,

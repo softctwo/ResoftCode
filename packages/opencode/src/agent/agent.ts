@@ -466,7 +466,7 @@ const layer = Layer.effect(
             agents,
             values(),
             sortBy(
-              [(x) => (cfg.default_agent ? x.name === cfg.default_agent : x.name === "code"), "desc"], // kilocode_change - renamed from "build" to "code"
+              [(x) => (cfg.default_agent ? x.name === cfg.default_agent : x.name === "resoft-data"), "desc"], // kilocode_change - 未配置时默认监管报送智能体
               [(x) => x.name, "asc"],
             ),
           )
@@ -484,7 +484,9 @@ const layer = Layer.effect(
             if (agent.hidden === true) throw new Error(`default agent "${c.default_agent}" is hidden`)
             return agent
           }
-          // kilocode_change start - prefer "code" as default agent (key order changes after rename from "build")
+          // kilocode_change start - 未配置 default_agent 时优先监管报送，其次 code
+          const data = agents["resoft-data"]
+          if (data && data.mode !== "subagent" && data.hidden !== true) return data
           const code = agents.code
           if (code && code.mode !== "subagent" && code.hidden !== true) return code
           // kilocode_change end

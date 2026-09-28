@@ -58,6 +58,7 @@ it.instance("returns default native agents when no config", () =>
     const agents = yield* load((svc) => svc.list())
     const names = agents.map((a) => a.name)
     expect(names).toContain("code")
+    expect(names).toContain("resoft-data")
     expect(names).toContain("plan")
     expect(names).toContain("general")
     expect(names).toContain("explore")
@@ -679,19 +680,35 @@ it.instance(
   },
 )
 
-it.instance("defaultAgent returns code when no default_agent config", () =>
+it.instance("defaultAgent returns resoft-data when no default_agent config", () =>
   Effect.gen(function* () {
     const agent = yield* load((svc) => svc.defaultAgent())
-    expect(agent).toBe("code")
+    expect(agent).toBe("resoft-data")
   }),
 )
 
-it.instance("defaultInfo returns resolved code agent when no default_agent config", () =>
+it.instance("defaultInfo returns resolved resoft-data agent when no default_agent config", () =>
   Effect.gen(function* () {
     const agent = yield* load((svc) => svc.defaultInfo())
-    expect(agent.name).toBe("code")
+    expect(agent.name).toBe("resoft-data")
     expect(agent.mode).toBe("primary")
   }),
+)
+
+it.instance(
+  "defaultAgent returns code when resoft-data is disabled",
+  () =>
+    Effect.gen(function* () {
+      const agent = yield* load((svc) => svc.defaultAgent())
+      expect(agent).toBe("code")
+    }),
+  {
+    config: {
+      agent: {
+        "resoft-data": { disable: true },
+      },
+    },
+  },
 )
 
 it.instance(
@@ -758,16 +775,16 @@ it.instance(
 )
 
 it.instance(
-  "defaultAgent returns plan when build is disabled and default_agent not set",
+  "defaultAgent returns plan when resoft-data and code are disabled",
   () =>
     Effect.gen(function* () {
       const agent = yield* load((svc) => svc.defaultAgent())
-      // build is disabled, so it should return plan (next primary agent)
       expect(agent).toBe("plan")
     }),
   {
     config: {
       agent: {
+        "resoft-data": { disable: true },
         build: { disable: true },
       },
     },
@@ -780,6 +797,7 @@ it.instance(
   {
     config: {
       agent: {
+        "resoft-data": { disable: true },
         code: { disable: true },
         plan: { disable: true },
         debug: { disable: true },
